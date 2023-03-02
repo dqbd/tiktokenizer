@@ -42,14 +42,10 @@ const MODELS = [
   "code-search-babbage-code-001",
   "code-search-ada-code-001",
   "gpt2",
-  "chatgpt-3.5-turbo",
+  "gpt-3.5-turbo",
 ];
 
-const POPULAR = [
-  "chatgpt-3.5-turbo",
-  "text-davinci-003",
-  "text-embedding-ada-002",
-];
+const POPULAR = ["gpt-3.5-turbo", "text-davinci-003", "text-embedding-ada-002"];
 
 const ENCODERS = ["gpt2", "cl100k_base", "p50k_base", "p50k_edit", "r50k_base"];
 
@@ -75,7 +71,7 @@ export function EncoderSelect(props: {
       ? `encoder:${props.value.encoder}`
       : "model" in props.value
       ? `model:${props.value.model}`
-      : `model:chatgpt-3.5-turbo`;
+      : `model:gpt-3.5-turbo`;
 
   return (
     <Select
@@ -107,7 +103,7 @@ export function EncoderSelect(props: {
               }:${value}`}
               key={value}
             >
-              {value}
+              {value === "gpt-3.5-turbo" ? `${value} (ChatGPT)` : value}
             </SelectItem>
           ))}
         </SelectGroup>

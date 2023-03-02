@@ -11,7 +11,7 @@ import { TextArea } from "~/components/Input";
 
 const Home: NextPage = () => {
   const [params, setParams] = useState<RouterInputs["token"]["encode"]>({
-    model: "chatgpt-3.5-turbo",
+    model: "gpt-3.5-turbo",
     text: "",
   });
 
@@ -58,7 +58,7 @@ const Home: NextPage = () => {
 
         <div className="grid gap-4 md:grid-cols-2">
           <section className="flex flex-col gap-4">
-            {"model" in params && params.model === "chatgpt-3.5-turbo" && (
+            {"model" in params && params.model === "gpt-3.5-turbo" && (
               <ChatGPTEditor onChange={setLiveText} />
             )}
 
@@ -80,18 +80,57 @@ const Home: NextPage = () => {
             <TokenViewer data={encode.data} isFetching={encode.isFetching} />
           </section>
         </div>
+        <style jsx>
+          {`
+            .diagram-link:hover > span {
+              margin-left: 0;
+            }
+
+            .diagram-link > svg {
+              opacity: 0;
+              transform: scale(0.8);
+            }
+            .diagram-link:hover > svg {
+              opacity: 1;
+              transform: scale(1);
+            }
+          `}
+        </style>
         <div className="flex justify-between text-center md:mt-6">
           <p className=" text-sm text-slate-400">
-            Created with the generous help from{" "}
+            Built by{" "}
             <a
               target="_blank"
               rel="noreferrer"
               className="text-slate-800"
+              href="https://duong.dev"
+            >
+              dqbd
+            </a>
+            . Created with the generous help from{" "}
+            <a
+              target="_blank"
+              rel="noreferrer"
+              className="diagram-link text-slate-800"
               href="https://diagram.com"
             >
-              Diagram
+              <svg
+                width="20"
+                height="20"
+                className="inline-flex align-top transition-all"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M10 20C15.5228 20 20 15.5228 20 10C20 4.47715 15.5228 0 10 0C4.47715 0 0 4.47715 0 10C0 15.5228 4.47715 20 10 20ZM10.9969 16.8033C14.3214 16.3204 16.875 13.4584 16.875 10C16.875 6.5416 14.3214 3.67963 10.9969 3.19674C10.7004 3.15368 10.5521 3.13215 10.3988 3.19165C10.2758 3.23941 10.1459 3.35182 10.0809 3.46672C10 3.60986 10 3.78158 10 4.125V15.875C10 16.2184 10 16.3901 10.0809 16.5333C10.1459 16.6482 10.2758 16.7606 10.3988 16.8084C10.5521 16.8679 10.7004 16.8463 10.9969 16.8033Z"
+                  fill="currentColor"
+                />
+              </svg>{" "}
+              <span className="ml-[-23px] transition-all">Diagram.</span>
             </a>
-            .
           </p>
 
           <div className="flex items-center gap-4">

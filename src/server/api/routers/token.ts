@@ -20,7 +20,7 @@ export const token = createTRPCRouter({
         z.object({
           text: z.string(),
           model: z.union([
-            z.literal("chatgpt-3.5-turbo"),
+            z.literal("gpt-3.5-turbo"),
             z.literal("text-davinci-003"),
             z.literal("text-davinci-002"),
             z.literal("text-davinci-001"),
@@ -61,7 +61,7 @@ export const token = createTRPCRouter({
           "encoder" in input
             ? get_encoding(input.encoder)
             : "model" in input
-            ? input.model === "chatgpt-3.5-turbo"
+            ? input.model === "gpt-3.5-turbo"
               ? get_encoding("cl100k_base", {
                   "<|im_start|>": 100264,
                   "<|im_end|>": 100265,
