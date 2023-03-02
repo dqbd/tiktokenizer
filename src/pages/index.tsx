@@ -1,7 +1,7 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import { useEffect, useState } from "react";
-import { GithubIcon, Slash, TwitterIcon } from "lucide-react";
+import { Github, Slash, Twitter } from "lucide-react";
 
 import { api, type RouterInputs } from "~/utils/api";
 import { ChatGPTEditor } from "../sections/ChatGPTEditor";
@@ -101,7 +101,7 @@ const Home: NextPage = () => {
               className="text-slate-800"
               href="https://github.com/dqbd/tiktokenizer"
             >
-              <GithubIcon />
+              <Github />
             </a>
             <a
               target="_blank"
@@ -109,7 +109,7 @@ const Home: NextPage = () => {
               className="text-slate-800"
               href="https://twitter.com/__dqbd"
             >
-              <TwitterIcon />
+              <Twitter />
             </a>
           </div>
         </div>
