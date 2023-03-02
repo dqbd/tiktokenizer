@@ -1,7 +1,7 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import { useEffect, useState } from "react";
-import { Slash } from "lucide-react";
+import { GithubIcon, Slash, TwitterIcon } from "lucide-react";
 
 import { api, type RouterInputs } from "~/utils/api";
 import { ChatGPTEditor } from "../sections/ChatGPTEditor";
@@ -80,27 +80,39 @@ const Home: NextPage = () => {
             <TokenViewer data={encode.data} isFetching={encode.isFetching} />
           </section>
         </div>
-        <p className="text-center text-sm text-slate-400 md:mt-6">
-          Using a fork of{" "}
-          <a
-            target="_blank"
-            rel="noreferrer"
-            className="text-slate-800"
-            href="https://github.com/dqbd/tiktoken"
-          >
-            tiktoken
-          </a>
-          . Created with the generous help from{" "}
-          <a
-            target="_blank"
-            rel="noreferrer"
-            className="text-slate-800"
-            href="https://diagram.com"
-          >
-            Diagram
-          </a>
-          .
-        </p>
+        <div className="flex justify-between text-center md:mt-6">
+          <p className=" text-sm text-slate-400">
+            Created with the generous help from{" "}
+            <a
+              target="_blank"
+              rel="noreferrer"
+              className="text-slate-800"
+              href="https://diagram.com"
+            >
+              Diagram
+            </a>
+            .
+          </p>
+
+          <div className="flex items-center gap-4">
+            <a
+              target="_blank"
+              rel="noreferrer"
+              className="text-slate-800"
+              href="https://github.com/dqbd/tiktokenizer"
+            >
+              <GithubIcon />
+            </a>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              className="text-slate-800"
+              href="https://twitter.com/__dqbd"
+            >
+              <TwitterIcon />
+            </a>
+          </div>
+        </div>
       </main>
     </>
   );
