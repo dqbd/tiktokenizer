@@ -1,6 +1,4 @@
-<p align="center">
-  <img width="1280" height="640" src="https://user-images.githubusercontent.com/1443449/222597674-287aefdc-f0e1-491b-9bf9-16431b1b8054.svg">
-</p>
+![Tiktokenizer](https://user-images.githubusercontent.com/1443449/222597674-287aefdc-f0e1-491b-9bf9-16431b1b8054.svg)
 
 ***
 
