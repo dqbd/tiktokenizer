@@ -26,6 +26,8 @@ export default async function handler(
         text: z.string(),
         model: z.union([
           z.literal("gpt-3.5-turbo"),
+          z.literal("gpt-4"),
+          z.literal("gpt-4-32k"),
           z.literal("text-davinci-003"),
           z.literal("text-davinci-002"),
           z.literal("text-davinci-001"),
@@ -68,6 +70,16 @@ export default async function handler(
       ? get_encoding(input.encoder)
       : "model" in input
       ? input.model === "gpt-3.5-turbo"
+        ? get_encoding("cl100k_base", {
+            "<|im_start|>": 100264,
+            "<|im_end|>": 100265,
+            "<|im_sep|>": 100266,
+            // TODO: very hacky
+            // "system name=": 900000,
+            // "assistant name=": 900001,
+            // "user name=": 900002,
+          })
+        : input.model === "gpt-4" || input.model === "gpt-4-32k"
         ? get_encoding("cl100k_base", {
             "<|im_start|>": 100264,
             "<|im_end|>": 100265,

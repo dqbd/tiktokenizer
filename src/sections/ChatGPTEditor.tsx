@@ -11,7 +11,10 @@ import { X as Close } from "lucide-react";
 import { Button } from "~/components/Button";
 import { Input, TextArea } from "~/components/Input";
 
-export function ChatGPTEditor(props: { onChange: (value: string) => void }) {
+export function ChatGPTEditor(props: {
+  model: "gpt-4" | "gpt-4-32k" | "gpt-3.5-turbo";
+  onChange: (value: string) => void;
+}) {
   const [rows, setRows] = useState<
     { role: string; message: string; name: string }[]
   >([
@@ -24,6 +27,7 @@ export function ChatGPTEditor(props: { onChange: (value: string) => void }) {
   // not ideal, but will suffice for now
   useEffect(() => void (changeRef.current = props.onChange), [props.onChange]);
   useEffect(() => {
+    const isGpt3 = props.model === "gpt-3.5-turbo";
     changeRef.current?.(
       [
         rows
@@ -31,15 +35,17 @@ export function ChatGPTEditor(props: { onChange: (value: string) => void }) {
             (i) =>
               `<|im_start|>${[i.role === "system-name" ? i.name : i.role]
                 .filter(Boolean)
-                .join(" ")}\n${i.message}<|im_end|>`
+                .join(" ")}${isGpt3 ? "\n" : "<|im_sep|>"}${
+                i.message
+              }<|im_end|>`
           )
-          .join("\n"),
+          .join(isGpt3 ? "\n" : ""),
         "<|im_start|>assistant",
       ]
         .filter(Boolean)
-        .join("\n")
+        .join(isGpt3 ? "\n" : "")
     );
-  }, [rows]);
+  }, [props.model, rows]);
 
   return (
     <div className="flex flex-col gap-2">

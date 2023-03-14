@@ -1,4 +1,4 @@
-import type { TiktokenEmbedding, TiktokenModel } from "@dqbd/tiktoken";
+import type { TiktokenEncoding, TiktokenModel } from "@dqbd/tiktoken";
 import {
   Select,
   SelectContent,
@@ -42,15 +42,25 @@ const MODELS = [
   "code-search-babbage-code-001",
   "code-search-ada-code-001",
   "gpt2",
+  "gpt-4",
+  "gpt-4-32k",
   "gpt-3.5-turbo",
 ];
 
-const POPULAR = ["gpt-3.5-turbo", "text-davinci-003", "text-embedding-ada-002"];
+const POPULAR = [
+  "gpt-4",
+  "gpt-4-32k",
+  "gpt-3.5-turbo",
+  "text-davinci-003",
+  "text-embedding-ada-002",
+];
+
+const CHAT_GPT_MODELS = ["gpt-3.5-turbo"];
 
 const ENCODERS = ["gpt2", "cl100k_base", "p50k_base", "p50k_edit", "r50k_base"];
 
-function isEncoder(encoder: string | undefined): encoder is TiktokenEmbedding {
-  return !!encoder?.includes(encoder as TiktokenEmbedding);
+function isEncoder(encoder: string | undefined): encoder is TiktokenEncoding {
+  return !!encoder?.includes(encoder as TiktokenEncoding);
 }
 
 function isModel(model: string | undefined): model is TiktokenModel {
@@ -103,7 +113,7 @@ export function EncoderSelect(props: {
               }:${value}`}
               key={value}
             >
-              {value === "gpt-3.5-turbo" ? `${value} (ChatGPT)` : value}
+              {CHAT_GPT_MODELS.includes(value) ? `${value} (ChatGPT)` : value}
             </SelectItem>
           ))}
         </SelectGroup>
