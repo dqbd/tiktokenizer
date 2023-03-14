@@ -80,7 +80,11 @@ const Home: NextPage = () => {
           </section>
 
           <section className="flex flex-col gap-4">
-            <TokenViewer data={encode.data} isFetching={encode.isFetching} />
+            <TokenViewer
+              model={"model" in params ? params.model : undefined}
+              data={encode.data}
+              isFetching={encode.isFetching}
+            />
           </section>
         </div>
         <style jsx>

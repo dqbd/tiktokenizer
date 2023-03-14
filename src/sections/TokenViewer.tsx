@@ -2,6 +2,8 @@ import { type RouterOutputs } from "~/utils/api";
 import { Fragment, useState } from "react";
 import { cn } from "~/utils/cn";
 
+import BN from "bignumber.js";
+
 const COLORS = [
   "bg-sky-200",
   "bg-amber-200",
@@ -24,16 +26,38 @@ const COLORS = [
   "bg-teal-200",
 ];
 
+const PRICING: Record<string, BN> = {
+  "gpt-4": BN("0.03").div(1000),
+  "gpt-4-32k": BN("0.03").div(1000),
+  "gpt-3.5-turbo": BN("0.002").div(1000),
+};
+
 export function TokenViewer(props: {
   isFetching: boolean;
+  model: string | undefined;
   data: RouterOutputs["token"]["encode"] | undefined;
 }) {
   const [indexHover, setIndexHover] = useState<null | number>(null);
+
+  const tokenCount = props.data?.encoding.length ?? 0;
+  const pricing = props.model != null ? PRICING[props.model] : undefined;
+
   return (
     <>
-      <div className="rounded-md border bg-slate-50 p-4 shadow-sm">
-        <p className="text-sm ">Token count</p>
-        <p className="text-lg">{props.data?.encoding.length ?? 0}</p>
+      <div className="flex gap-4">
+        <div className="rounded-md border bg-slate-50 p-4 shadow-sm flex-grow">
+          <p className="text-sm ">Token count</p>
+          <p className="text-lg">{tokenCount}</p>
+        </div>
+
+        {pricing != null && (
+          <div className="rounded-md border bg-slate-50 p-4 shadow-sm flex-grow">
+            <p className="text-sm ">Price per prompt</p>
+            <p className="text-lg">
+              ${pricing?.multipliedBy(tokenCount)?.toFixed()}
+            </p>
+          </div>
+        )}
       </div>
 
       <pre className="min-h-[256px] max-w-[100vw] overflow-auto whitespace-pre-wrap break-all rounded-md border bg-slate-50 p-4 shadow-sm">
