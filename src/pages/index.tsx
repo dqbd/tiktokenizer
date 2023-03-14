@@ -77,6 +77,20 @@ const Home: NextPage = () => {
                 token value (eg. 900000) for the name field.
               </p>
             )}
+
+            {"model" in params &&
+              (params.model === "gpt-4" || params.model === "gpt-4-32k") && (
+                <p className="text-sm text-slate-400">
+                  Based on the preliminary discoveries found in the following{" "}
+                  <a
+                    href="https://news.ycombinator.com/item?id=34990391"
+                    className="text-slate-800"
+                  >
+                    Hacker News thread
+                  </a>
+                  .
+                </p>
+              )}
           </section>
 
           <section className="flex flex-col gap-4">
