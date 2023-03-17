@@ -9,7 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/Select";
-import { type RouterInputs } from "~/utils/api";
 
 const MODELS = [
   "text-davinci-003",
@@ -67,10 +66,7 @@ function isModel(model: string | undefined): model is TiktokenModel {
   return !!model?.includes(model as TiktokenModel);
 }
 
-type UnionOmit<T, K extends string | number | symbol> = T extends unknown
-  ? Omit<T, K>
-  : never;
-type ModelOnly = UnionOmit<RouterInputs["token"]["encode"], "text">;
+type ModelOnly = { model: TiktokenModel } | { encoder: TiktokenEncoding };
 
 export function EncoderSelect(props: {
   value: ModelOnly;

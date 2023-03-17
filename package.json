@@ -9,7 +9,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "@dqbd/tiktoken": "^1.0.0-alpha.3",
+    "@dqbd/tiktoken": "^1.0.2",
     "@radix-ui/react-select": "^1.2.0",
     "@tanstack/react-query": "^4.20.2",
     "@trpc/client": "^10.9.0",

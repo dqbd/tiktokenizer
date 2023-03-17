@@ -9,10 +9,10 @@
   dependencies:
     regenerator-runtime "^0.13.11"
 
-"@dqbd/tiktoken@^1.0.0-alpha.3":
-  version "1.0.0-alpha.3"
-  resolved "https://registry.yarnpkg.com/@dqbd/tiktoken/-/tiktoken-1.0.0-alpha.3.tgz#d5b3fa7fa72c229cd7ebd9fd488dd6003c99e1d8"
-  integrity sha512-ISQ3BQbCrx8mW6ph0Tp4Z9ZfvcRIl1iymWRgUV/syFJESWWevELSYf5lek/tcCk+uQJ5iq0Cf3UThUI47SecyQ==
+"@dqbd/tiktoken@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@dqbd/tiktoken/-/tiktoken-1.0.2.tgz#f180afc887426343bab2adc41106d04dbd3627c0"
+  integrity sha512-AjGTBRWsMoVmVeN55NLyupyM8TNamOUBl6tj5t/leLDVup3CFGO9tVagNL1jf3GyZLkWZSTmYVbPQ/M2LEcNzw==
 
 "@eslint/eslintrc@^2.0.0":
   version "2.0.0"

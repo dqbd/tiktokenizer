@@ -35,7 +35,7 @@ const PRICING: Record<string, BN> = {
 export function TokenViewer(props: {
   isFetching: boolean;
   model: string | undefined;
-  data: RouterOutputs["token"]["encode"] | undefined;
+  data: { encoding: Uint32Array; segments: string[] } | undefined;
 }) {
   const [indexHover, setIndexHover] = useState<null | number>(null);
 

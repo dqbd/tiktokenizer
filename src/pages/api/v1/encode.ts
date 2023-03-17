@@ -69,17 +69,9 @@ export default async function handler(
     "encoder" in input
       ? get_encoding(input.encoder)
       : "model" in input
-      ? input.model === "gpt-3.5-turbo"
-        ? get_encoding("cl100k_base", {
-            "<|im_start|>": 100264,
-            "<|im_end|>": 100265,
-            "<|im_sep|>": 100266,
-            // TODO: very hacky
-            // "system name=": 900000,
-            // "assistant name=": 900001,
-            // "user name=": 900002,
-          })
-        : input.model === "gpt-4" || input.model === "gpt-4-32k"
+      ? input.model === "gpt-3.5-turbo" ||
+        input.model === "gpt-4" ||
+        input.model === "gpt-4-32k"
         ? get_encoding("cl100k_base", {
             "<|im_start|>": 100264,
             "<|im_end|>": 100265,

@@ -20,5 +20,14 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+
+  webpack(config) {
+    config.experiments = {
+      asyncWebAssembly: true,
+      layers: true,
+    };
+
+    return config;
+  },
 };
 export default config;

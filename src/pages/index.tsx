@@ -1,34 +1,73 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import { useEffect, useState } from "react";
-import { Github, Slash, Twitter } from "lucide-react";
+import { useState } from "react";
+import { Github, Twitter } from "lucide-react";
 
-import { api, type RouterInputs } from "~/utils/api";
 import { ChatGPTEditor } from "../sections/ChatGPTEditor";
 import { EncoderSelect } from "~/sections/EncoderSelect";
 import { TokenViewer } from "~/sections/TokenViewer";
 import { TextArea } from "~/components/Input";
+import {
+  encoding_for_model,
+  get_encoding,
+  type TiktokenModel,
+  type TiktokenEncoding,
+} from "@dqbd/tiktoken";
+
+const decoder = new TextDecoder();
+
+function getUserSelectedEncoder(
+  params: { model: TiktokenModel } | { encoder: TiktokenEncoding }
+) {
+  if ("model" in params) {
+    if (
+      params.model === "gpt-4" ||
+      params.model === "gpt-4-32k" ||
+      params.model === "gpt-3.5-turbo"
+    ) {
+      return encoding_for_model(params.model, {
+        "<|im_start|>": 100264,
+        "<|im_end|>": 100265,
+        "<|im_sep|>": 100266,
+      });
+    }
+
+    return encoding_for_model(params.model);
+  }
+
+  if ("encoder" in params) {
+    return get_encoding(params.encoder);
+  }
+
+  throw new Error("Invalid params");
+}
 
 const Home: NextPage = () => {
-  const [params, setParams] = useState<RouterInputs["token"]["encode"]>({
-    model: "gpt-3.5-turbo",
-    text: "",
-  });
+  const [text, setText] = useState<string>("");
+  const [params, setParams] = useState<
+    { model: TiktokenModel } | { encoder: TiktokenEncoding }
+  >({ model: "gpt-3.5-turbo" });
 
-  const encode = api.token.encode.useQuery(params, {
-    keepPreviousData: true,
-    refetchOnWindowFocus: false,
-  });
+  const [encoder, setEncoder] = useState(() => getUserSelectedEncoder(params));
 
-  const [liveText, setLiveText] = useState("");
-  useEffect(() => {
-    const text = liveText;
-    const timeout = window.setTimeout(
-      () => setParams((params) => ({ ...params, text })),
-      0
+  const tokens = encoder.encode(text, "all");
+  const segments = Array(tokens.length)
+    .fill(0)
+    .map((_, i) =>
+      decoder.decode(encoder.decode_single_token_bytes(tokens[i] ?? 0))
     );
-    return () => window.clearTimeout(timeout);
-  }, [liveText]);
+
+  const data = {
+    encoding: tokens.filter(
+      (_, idx) => !(idx > 0 && (tokens[idx - 1] ?? 0) >= 900000)
+    ),
+    segments: segments
+      .map((i, idx) => {
+        if ((tokens[idx] ?? 0) >= 900000) return `${i}${segments[idx + 1]}`;
+        return i;
+      })
+      .filter((_, idx) => !(idx > 0 && (tokens[idx - 1] ?? 0) >= 900000)),
+  };
 
   return (
     <>
@@ -41,20 +80,17 @@ const Home: NextPage = () => {
           <h1 className="text-4xl font-bold">Tiktokenizer</h1>
 
           <EncoderSelect
-            onChange={(update) =>
-              setParams((params) => ({ text: params.text, ...update }))
-            }
             value={params}
+            onChange={(update) => {
+              setEncoder((encoder) => {
+                encoder.free();
+                return getUserSelectedEncoder(update);
+              });
+
+              setParams(update);
+            }}
           />
         </div>
-
-        {encode.error && (
-          <div className="flex gap-3 rounded-md border border-red-300 bg-red-200 p-4 text-red-900">
-            <Slash />
-            <strong>Failed to encode</strong>
-            <p>{encode.error?.message}</p>
-          </div>
-        )}
 
         <div className="grid gap-4 md:grid-cols-2">
           <section className="flex flex-col gap-4">
@@ -62,16 +98,16 @@ const Home: NextPage = () => {
               (params.model === "gpt-3.5-turbo" ||
                 params.model === "gpt-4" ||
                 params.model === "gpt-4-32k") && (
-                <ChatGPTEditor model={params.model} onChange={setLiveText} />
+                <ChatGPTEditor model={params.model} onChange={setText} />
               )}
 
             <TextArea
-              value={liveText}
-              onChange={(e) => setLiveText(e.target.value)}
+              value={text}
+              onChange={(e) => setText(e.target.value)}
               className="min-h-[256px] rounded-md border p-4 font-mono shadow-sm"
             />
 
-            {encode.data?.encoding.find((i) => i >= 900_000) && (
+            {data.encoding.find((i) => i >= 900_000) && (
               <p className="text-sm text-slate-600">
                 <span className="font-medium">Note</span>: Using a placeholder
                 token value (eg. 900000) for the name field.
@@ -96,8 +132,8 @@ const Home: NextPage = () => {
           <section className="flex flex-col gap-4">
             <TokenViewer
               model={"model" in params ? params.model : undefined}
-              data={encode.data}
-              isFetching={encode.isFetching}
+              data={data}
+              isFetching={false}
             />
           </section>
         </div>
