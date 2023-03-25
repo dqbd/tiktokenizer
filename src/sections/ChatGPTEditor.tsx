@@ -11,15 +11,34 @@ import { X as Close } from "lucide-react";
 import { Button } from "~/components/Button";
 import { Input, TextArea } from "~/components/Input";
 
+function getChatGPTEncoding(
+  messages: { role: string; content: string; name: string }[],
+  model: "gpt-3.5-turbo" | "gpt-4" | "gpt-4-32k"
+) {
+  const isGpt3 = model === "gpt-3.5-turbo";
+
+  const msgSep = isGpt3 ? "\n" : "";
+  const roleSep = isGpt3 ? "\n" : "<|im_sep|>";
+
+  return [
+    messages
+      .map(({ name, role, content }) => {
+        return `<|im_start|>${name || role}${roleSep}${content}<|im_end|>`;
+      })
+      .join(msgSep),
+    `<|im_start|>assistant${roleSep}`,
+  ].join(msgSep);
+}
+
 export function ChatGPTEditor(props: {
   model: "gpt-4" | "gpt-4-32k" | "gpt-3.5-turbo";
   onChange: (value: string) => void;
 }) {
   const [rows, setRows] = useState<
-    { role: string; message: string; name: string }[]
+    { role: string; content: string; name: string }[]
   >([
-    { role: "system", message: "You are a helpful assistant", name: "" },
-    { role: "user", message: "", name: "" },
+    { role: "system", content: "You are a helpful assistant", name: "" },
+    { role: "user", content: "", name: "" },
   ]);
 
   const changeRef = useRef<(value: string) => void>(props.onChange);
@@ -27,24 +46,7 @@ export function ChatGPTEditor(props: {
   // not ideal, but will suffice for now
   useEffect(() => void (changeRef.current = props.onChange), [props.onChange]);
   useEffect(() => {
-    const isGpt3 = props.model === "gpt-3.5-turbo";
-    changeRef.current?.(
-      [
-        rows
-          .map(
-            (i) =>
-              `<|im_start|>${[i.role === "system-name" ? i.name : i.role]
-                .filter(Boolean)
-                .join(" ")}${isGpt3 ? "\n" : "<|im_sep|>"}${
-                i.message
-              }<|im_end|>`
-          )
-          .join(isGpt3 ? "\n" : ""),
-        "<|im_start|>assistant",
-      ]
-        .filter(Boolean)
-        .join(isGpt3 ? "\n" : "")
-    );
+    changeRef.current?.(getChatGPTEncoding(rows, props.model));
   }, [props.model, rows]);
 
   return (
@@ -93,13 +95,13 @@ export function ChatGPTEditor(props: {
 
               <TextArea
                 rows={1}
-                value={row.message}
+                value={row.content}
                 placeholder="Content"
                 onChange={(e) =>
                   setRows((rows) => {
                     const newRows = [...rows];
                     // @ts-expect-error
-                    newRows[i].message = e.target.value;
+                    newRows[i].content = e.target.value;
                     return newRows;
                   })
                 }
@@ -133,7 +135,7 @@ export function ChatGPTEditor(props: {
               role = "assistant";
             }
 
-            return [...rows, { role, message: "", name: "" }];
+            return [...rows, { role, content: "", name: "" }];
           })
         }
       >
