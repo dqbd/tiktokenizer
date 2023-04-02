@@ -73,7 +73,7 @@ export function TokenViewer(props: {
               props.isFetching && "opacity-50"
             )}
           >
-            {i}
+            {i.replaceAll("\n", "\\n\n")}
           </span>
         ))}
       </pre>
