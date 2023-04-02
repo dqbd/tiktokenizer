@@ -3,6 +3,7 @@ import { Fragment, useState } from "react";
 import { cn } from "~/utils/cn";
 
 import BN from "bignumber.js";
+import { Checkbox } from "~/components/Checkbox";
 
 const COLORS = [
   "bg-sky-200",
@@ -32,6 +33,22 @@ const PRICING: Record<string, BN> = {
   "gpt-3.5-turbo": BN("0.002").div(1000),
 };
 
+function encodeWhitespace(str: string) {
+  let result = str;
+
+  result = result.replaceAll(" ", "⋅");
+  result = result.replaceAll("\t", "→");
+  result = result.replaceAll("\f", "\\f\f");
+  result = result.replaceAll("\b", "\\b\b");
+  result = result.replaceAll("\v", "\\v\v");
+
+  result = result.replaceAll("\r", "\\r\r");
+  result = result.replaceAll("\n", "\\n\n");
+  result = result.replaceAll("\\r\r\\n\n", "\\r\\n\r\n");
+
+  return result;
+}
+
 export function TokenViewer(props: {
   isFetching: boolean;
   model: string | undefined;
@@ -41,6 +58,8 @@ export function TokenViewer(props: {
 
   const tokenCount = props.data?.encoding.length ?? 0;
   const pricing = props.model != null ? PRICING[props.model] : undefined;
+
+  const [showWhitespace, setShowWhitespace] = useState(false);
 
   return (
     <>
@@ -73,7 +92,7 @@ export function TokenViewer(props: {
               props.isFetching && "opacity-50"
             )}
           >
-            {i.replaceAll("\n", "\\n\n")}
+            {showWhitespace ? encodeWhitespace(i) : i}
           </span>
         ))}
       </pre>
@@ -110,6 +129,20 @@ export function TokenViewer(props: {
           </span>
         )}
       </pre>
+
+      <div className="flex items-center space-x-2">
+        <Checkbox
+          id="terms"
+          checked={showWhitespace}
+          onClick={() => setShowWhitespace((v) => !v)}
+        />
+        <label
+          htmlFor="terms"
+          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          Show whitespace
+        </label>
+      </div>
     </>
   );
 }
