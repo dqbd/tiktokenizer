@@ -92,7 +92,7 @@ export function TokenViewer(props: {
               props.isFetching && "opacity-50"
             )}
           >
-            {showWhitespace ? encodeWhitespace(i) : i}
+            {showWhitespace || indexHover === idx ? encodeWhitespace(i) : i}
           </span>
         ))}
       </pre>
