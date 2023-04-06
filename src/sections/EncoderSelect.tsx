@@ -1,14 +1,16 @@
 import type { TiktokenEncoding, TiktokenModel } from "@dqbd/tiktoken";
+import { ChevronsUpDown } from "lucide-react";
+import { useState } from "react";
+import { Button } from "~/components/Button";
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectSeparator,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/Select";
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandSeparator,
+} from "~/components/Command";
+import { Popover, PopoverContent, PopoverTrigger } from "~/components/Popover";
 
 const MODELS = [
   "text-davinci-003",
@@ -72,6 +74,7 @@ export function EncoderSelect(props: {
   value: ModelOnly;
   onChange: (value: ModelOnly) => void;
 }) {
+  const [open, setOpen] = useState(false);
   const serializedValue =
     "encoder" in props.value
       ? `encoder:${props.value.encoder}`
@@ -79,63 +82,86 @@ export function EncoderSelect(props: {
       ? `model:${props.value.model}`
       : `model:gpt-3.5-turbo`;
 
+  const onSelect = (pair: string) => {
+    setOpen(false);
+    const [key, value] = pair.split(":");
+
+    if (key === "model" && isModel(value)) {
+      return props.onChange({ model: value });
+    }
+
+    if (key === "encoder" && isEncoder(value)) {
+      return props.onChange({ encoder: value });
+    }
+
+    props.onChange({ encoder: "gpt2" as const });
+  };
+
+  console.log({ open });
+
   return (
-    <Select
-      value={serializedValue}
-      onValueChange={(pair) => {
-        const [key, value] = pair.split(":");
+    <div>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            className="w-[300px] justify-between"
+          >
+            {serializedValue.split(":")[1]}
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="max-h-[70vh] overflow-auto p-0 pb-2">
+          <Command>
+            <CommandInput placeholder="Search model or encoder..." />
+            <CommandEmpty>No model or encoder found.</CommandEmpty>
+            <CommandGroup heading="Popular">
+              {POPULAR.map((value) => (
+                <CommandItem
+                  key={value}
+                  value={`${
+                    ENCODERS.includes(value) ? "encoder" : "model"
+                  }:${value}`}
+                  onSelect={onSelect}
+                >
+                  {CHAT_GPT_MODELS.includes(value)
+                    ? `${value} (ChatGPT)`
+                    : value}
+                </CommandItem>
+              ))}
+            </CommandGroup>
 
-        if (key === "model" && isModel(value)) {
-          return props.onChange({ model: value });
-        }
+            <CommandSeparator />
 
-        if (key === "encoder" && isEncoder(value)) {
-          return props.onChange({ encoder: value });
-        }
+            <CommandGroup heading="Encoders">
+              {ENCODERS.filter((x) => !POPULAR.includes(x)).map((value) => (
+                <CommandItem
+                  key={value}
+                  value={`encoder:${value}`}
+                  onSelect={onSelect}
+                >
+                  {value}
+                </CommandItem>
+              ))}
+            </CommandGroup>
 
-        return props.onChange({ encoder: "gpt2" as const });
-      }}
-    >
-      <SelectTrigger className="w-[260px]">
-        <SelectValue placeholder="Model or Encoder" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectGroup>
-          <SelectLabel>Popular</SelectLabel>
-          {POPULAR.map((value) => (
-            <SelectItem
-              value={`${
-                ENCODERS.includes(value) ? "encoder" : "model"
-              }:${value}`}
-              key={value}
-            >
-              {CHAT_GPT_MODELS.includes(value) ? `${value} (ChatGPT)` : value}
-            </SelectItem>
-          ))}
-        </SelectGroup>
+            <CommandSeparator />
 
-        <SelectSeparator />
-
-        <SelectGroup>
-          <SelectLabel>Encoders</SelectLabel>
-          {ENCODERS.filter((x) => !POPULAR.includes(x)).map((value) => (
-            <SelectItem value={`encoder:${value}`} key={value}>
-              {value}
-            </SelectItem>
-          ))}
-        </SelectGroup>
-
-        <SelectSeparator />
-
-        <SelectGroup>
-          <SelectLabel>Models</SelectLabel>
-          {MODELS.filter((x) => !POPULAR.includes(x)).map((value) => (
-            <SelectItem value={`model:${value}`} key={value}>
-              {value}
-            </SelectItem>
-          ))}
-        </SelectGroup>
-      </SelectContent>
-    </Select>
+            <CommandGroup heading="Models">
+              {MODELS.filter((x) => !POPULAR.includes(x)).map((value) => (
+                <CommandItem
+                  key={value}
+                  value={`model:${value}`}
+                  onSelect={onSelect}
+                >
+                  {value}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 }
