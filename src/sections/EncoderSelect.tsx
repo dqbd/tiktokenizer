@@ -97,8 +97,6 @@ export function EncoderSelect(props: {
     props.onChange({ encoder: "gpt2" as const });
   };
 
-  console.log({ open });
-
   return (
     <div>
       <Popover open={open} onOpenChange={setOpen}>

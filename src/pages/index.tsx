@@ -13,8 +13,7 @@ import {
   type TiktokenModel,
   type TiktokenEncoding,
 } from "@dqbd/tiktoken";
-
-const decoder = new TextDecoder();
+import { getSegments } from "~/utils/segments";
 
 function getUserSelectedEncoder(
   params: { model: TiktokenModel } | { encoder: TiktokenEncoding }
@@ -43,31 +42,13 @@ function getUserSelectedEncoder(
 }
 
 const Home: NextPage = () => {
-  const [text, setText] = useState<string>("");
+  const [inputText, setInputText] = useState<string>("");
   const [params, setParams] = useState<
     { model: TiktokenModel } | { encoder: TiktokenEncoding }
   >({ model: "gpt-3.5-turbo" });
 
   const [encoder, setEncoder] = useState(() => getUserSelectedEncoder(params));
-
-  const tokens = encoder.encode(text, "all");
-  const segments = Array(tokens.length)
-    .fill(0)
-    .map((_, i) =>
-      decoder.decode(encoder.decode_single_token_bytes(tokens[i] ?? 0))
-    );
-
-  const data = {
-    encoding: tokens.filter(
-      (_, idx) => !(idx > 0 && (tokens[idx - 1] ?? 0) >= 900000)
-    ),
-    segments: segments
-      .map((i, idx) => {
-        if ((tokens[idx] ?? 0) >= 900000) return `${i}${segments[idx + 1]}`;
-        return i;
-      })
-      .filter((_, idx) => !(idx > 0 && (tokens[idx - 1] ?? 0) >= 900000)),
-  };
+  const data = getSegments(encoder, inputText);
 
   return (
     <>
@@ -98,35 +79,14 @@ const Home: NextPage = () => {
               (params.model === "gpt-3.5-turbo" ||
                 params.model === "gpt-4" ||
                 params.model === "gpt-4-32k") && (
-                <ChatGPTEditor model={params.model} onChange={setText} />
+                <ChatGPTEditor model={params.model} onChange={setInputText} />
               )}
 
             <TextArea
-              value={text}
-              onChange={(e) => setText(e.target.value)}
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
               className="min-h-[256px] rounded-md border p-4 font-mono shadow-sm"
             />
-
-            {data.encoding.find((i) => i >= 900_000) && (
-              <p className="text-sm text-slate-600">
-                <span className="font-medium">Note</span>: Using a placeholder
-                token value (eg. 900000) for the name field.
-              </p>
-            )}
-
-            {"model" in params &&
-              (params.model === "gpt-4" || params.model === "gpt-4-32k") && (
-                <p className="text-sm text-slate-400">
-                  Based on the preliminary discoveries found in the following{" "}
-                  <a
-                    href="https://news.ycombinator.com/item?id=34990391"
-                    className="text-slate-800"
-                  >
-                    Hacker News thread
-                  </a>
-                  .
-                </p>
-              )}
           </section>
 
           <section className="flex flex-col gap-4">

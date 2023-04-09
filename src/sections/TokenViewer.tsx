@@ -1,4 +1,3 @@
-import { type RouterOutputs } from "~/utils/api";
 import { Fragment, useState } from "react";
 import { cn } from "~/utils/cn";
 
@@ -52,11 +51,14 @@ function encodeWhitespace(str: string) {
 export function TokenViewer(props: {
   isFetching: boolean;
   model: string | undefined;
-  data: { encoding: Uint32Array; segments: string[] } | undefined;
+  data:
+    | Array<{ text: string; tokens: { id: number; idx: number }[] }>
+    | undefined;
 }) {
   const [indexHover, setIndexHover] = useState<null | number>(null);
 
-  const tokenCount = props.data?.encoding.length ?? 0;
+  const tokenCount =
+    props.data?.reduce((memo, i) => memo + i.tokens.length, 0) ?? 0;
   const pricing = props.model != null ? PRICING[props.model] : undefined;
 
   const [showWhitespace, setShowWhitespace] = useState(false);
@@ -80,7 +82,7 @@ export function TokenViewer(props: {
       </div>
 
       <pre className="min-h-[256px] max-w-[100vw] overflow-auto whitespace-pre-wrap break-all rounded-md border bg-slate-50 p-4 shadow-sm">
-        {props.data?.segments.map((i, idx) => (
+        {props.data?.map(({ text }, idx) => (
           <span
             key={idx}
             onMouseEnter={() => setIndexHover(idx)}
@@ -92,7 +94,9 @@ export function TokenViewer(props: {
               props.isFetching && "opacity-50"
             )}
           >
-            {showWhitespace || indexHover === idx ? encodeWhitespace(i) : i}
+            {showWhitespace || indexHover === idx
+              ? encodeWhitespace(text)
+              : text}
           </span>
         ))}
       </pre>
@@ -102,7 +106,7 @@ export function TokenViewer(props: {
           "min-h-[256px] max-w-[100vw] overflow-auto whitespace-pre-wrap break-all rounded-md border bg-slate-50 p-4 shadow-sm"
         }
       >
-        {props.data && (props.data?.encoding.length ?? 0) > 0 && (
+        {props.data && tokenCount > 0 && (
           <span
             className={cn(
               "transition-opacity",
@@ -110,19 +114,24 @@ export function TokenViewer(props: {
             )}
           >
             [
-            {[...props.data.encoding].map((id, idx) => (
-              <Fragment key={idx}>
-                <span
-                  onMouseEnter={() => setIndexHover(idx)}
-                  onMouseLeave={() => setIndexHover(null)}
-                  className={cn(
-                    "transition-colors",
-                    indexHover === idx && COLORS[idx % COLORS.length]
-                  )}
-                >
-                  {id}
-                </span>
-                {props.data && idx !== props.data.encoding.length - 1 && ", "}
+            {props.data.map((segment, segmentIdx) => (
+              <Fragment key={segmentIdx}>
+                {segment.tokens.map((token) => (
+                  <Fragment key={token.idx}>
+                    <span
+                      onMouseEnter={() => setIndexHover(segmentIdx)}
+                      onMouseLeave={() => setIndexHover(null)}
+                      className={cn(
+                        "transition-colors",
+                        indexHover === segmentIdx &&
+                          COLORS[segmentIdx % COLORS.length]
+                      )}
+                    >
+                      {token.id}
+                    </span>
+                    <span className="last-of-type:hidden">{", "}</span>
+                  </Fragment>
+                ))}
               </Fragment>
             ))}
             ]

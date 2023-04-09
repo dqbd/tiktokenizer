@@ -7,9 +7,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log(
-    typeof req.body === "object" ? { ...req.body, ...req.query } : req.query
-  );
   const input = z
     .union([
       z.object({
