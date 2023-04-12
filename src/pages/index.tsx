@@ -10,15 +10,33 @@ import { TextArea } from "~/components/Input";
 import {
   encoding_for_model,
   get_encoding,
+  Tiktoken,
   type TiktokenModel,
   type TiktokenEncoding,
 } from "@dqbd/tiktoken";
 import { getSegments } from "~/utils/segments";
 
+import gptj from "~/ranks/gptj.json" assert { type: "json" };
+import claude from "~/ranks/claude.json" assert { type: "json" };
+
 function getUserSelectedEncoder(
-  params: { model: TiktokenModel } | { encoder: TiktokenEncoding }
+  params:
+    | { model: TiktokenModel | "gpt-j" | "claude" }
+    | { encoder: TiktokenEncoding }
 ) {
   if ("model" in params) {
+    if (params.model === "gpt-j") {
+      return new Tiktoken(gptj.bpe_ranks, gptj.special_tokens, gptj.pat_str);
+    }
+
+    if (params.model === "claude") {
+      return new Tiktoken(
+        claude.bpe_ranks,
+        claude.special_tokens,
+        claude.pat_str
+      );
+    }
+
     if (
       params.model === "gpt-4" ||
       params.model === "gpt-4-32k" ||
@@ -44,7 +62,8 @@ function getUserSelectedEncoder(
 const Home: NextPage = () => {
   const [inputText, setInputText] = useState<string>("");
   const [params, setParams] = useState<
-    { model: TiktokenModel } | { encoder: TiktokenEncoding }
+    | { model: TiktokenModel | "gpt-j" | "claude" }
+    | { encoder: TiktokenEncoding }
   >({ model: "gpt-3.5-turbo" });
 
   const [encoder, setEncoder] = useState(() => getUserSelectedEncoder(params));
