@@ -41,6 +41,17 @@ function getUserSelectedEncoder(
   throw new Error("Invalid params");
 }
 
+function isChatModel(
+  params: { model: TiktokenModel } | { encoder: TiktokenEncoding }
+): params is { model: "gpt-3.5-turbo" | "gpt-4" | "gpt-4-32k" } {
+  return (
+    "model" in params &&
+    (params.model === "gpt-3.5-turbo" ||
+      params.model === "gpt-4" ||
+      params.model === "gpt-4-32k")
+  );
+}
+
 const Home: NextPage = () => {
   const [inputText, setInputText] = useState<string>("");
   const [params, setParams] = useState<
@@ -68,6 +79,10 @@ const Home: NextPage = () => {
                 return getUserSelectedEncoder(update);
               });
 
+              if (isChatModel(update) !== isChatModel(params)) {
+                setInputText("");
+              }
+
               setParams(update);
             }}
           />
@@ -75,12 +90,9 @@ const Home: NextPage = () => {
 
         <div className="grid gap-4 md:grid-cols-2">
           <section className="flex flex-col gap-4">
-            {"model" in params &&
-              (params.model === "gpt-3.5-turbo" ||
-                params.model === "gpt-4" ||
-                params.model === "gpt-4-32k") && (
-                <ChatGPTEditor model={params.model} onChange={setInputText} />
-              )}
+            {isChatModel(params) && (
+              <ChatGPTEditor model={params.model} onChange={setInputText} />
+            )}
 
             <TextArea
               value={inputText}
