@@ -46,6 +46,8 @@ const MODELS = [
   "gpt-4",
   "gpt-4-32k",
   "gpt-3.5-turbo",
+  "gpt-j",
+  "claude",
 ];
 
 const POPULAR = [
@@ -56,6 +58,8 @@ const POPULAR = [
   "text-embedding-ada-002",
 ];
 
+const CUSTOM = ["gpt-j", "claude"];
+
 const CHAT_GPT_MODELS = ["gpt-3.5-turbo"];
 
 const ENCODERS = ["gpt2", "cl100k_base", "p50k_base", "p50k_edit", "r50k_base"];
@@ -64,11 +68,15 @@ function isEncoder(encoder: string | undefined): encoder is TiktokenEncoding {
   return !!encoder?.includes(encoder as TiktokenEncoding);
 }
 
-function isModel(model: string | undefined): model is TiktokenModel {
+function isModel(
+  model: string | undefined
+): model is TiktokenModel | "gpt-j" | "claude" {
   return !!model?.includes(model as TiktokenModel);
 }
 
-type ModelOnly = { model: TiktokenModel } | { encoder: TiktokenEncoding };
+type ModelOnly =
+  | { model: TiktokenModel | "gpt-j" | "claude" }
+  | { encoder: TiktokenEncoding };
 
 export function EncoderSelect(props: {
   value: ModelOnly;
@@ -132,8 +140,28 @@ export function EncoderSelect(props: {
 
             <CommandSeparator />
 
+            <CommandGroup heading="Custom">
+              {CUSTOM.map((value) => (
+                <CommandItem
+                  key={value}
+                  value={`${
+                    ENCODERS.includes(value) ? "encoder" : "model"
+                  }:${value}`}
+                  onSelect={onSelect}
+                >
+                  {CHAT_GPT_MODELS.includes(value)
+                    ? `${value} (ChatGPT)`
+                    : value}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+
+            <CommandSeparator />
+
             <CommandGroup heading="Encoders">
-              {ENCODERS.filter((x) => !POPULAR.includes(x)).map((value) => (
+              {ENCODERS.filter(
+                (x) => !POPULAR.includes(x) && !CUSTOM.includes(x)
+              ).map((value) => (
                 <CommandItem
                   key={value}
                   value={`encoder:${value}`}
@@ -147,7 +175,9 @@ export function EncoderSelect(props: {
             <CommandSeparator />
 
             <CommandGroup heading="Models">
-              {MODELS.filter((x) => !POPULAR.includes(x)).map((value) => (
+              {MODELS.filter(
+                (x) => !POPULAR.includes(x) && !CUSTOM.includes(x)
+              ).map((value) => (
                 <CommandItem
                   key={value}
                   value={`model:${value}`}
