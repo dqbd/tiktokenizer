@@ -48,6 +48,8 @@ function encodeWhitespace(str: string) {
   return result;
 }
 
+const firstOccurrences: Record<number, number> = {};
+
 export function TokenViewer(props: {
   isFetching: boolean;
   model: string | undefined;
@@ -64,10 +66,10 @@ export function TokenViewer(props: {
   const [showWhitespace, setShowWhitespace] = useState(false);
 
   // Keep track of the first occurrence of each token
-  const firstOccurrences: Record<number, number> = {};
   props.data?.forEach(({ tokens }) => {
     tokens.forEach(({ id, idx }) => {
       if (firstOccurrences[id] == null) {
+        console.log("firstOccurrences", id, idx);
         firstOccurrences[id] = idx;
       }
     });
