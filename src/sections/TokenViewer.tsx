@@ -63,6 +63,18 @@ export function TokenViewer(props: {
 
   const [showWhitespace, setShowWhitespace] = useState(false);
 
+  // Keep track of the first occurrence of each token
+  const firstOccurrences: Record<number, number> = {};
+  props.data?.forEach(({ tokens }) => {
+    tokens.forEach(({ id, idx }) => {
+      if (firstOccurrences[id] == null) {
+        firstOccurrences[id] = idx;
+      }
+    });
+  });
+
+  console.log(props.data)
+
   return (
     <>
       <div className="flex gap-4">
@@ -75,83 +87,83 @@ export function TokenViewer(props: {
           <div className="flex-grow rounded-md border bg-slate-50 p-4 shadow-sm">
             <p className="text-sm ">Price per prompt</p>
             <p className="text-lg">
-              ${pricing?.multipliedBy(tokenCount)?.toFixed()}
-            </p>
-          </div>
-        )}
+              ${pricing?.multipliedBy(tokenCount)?.        toFixed()}
+        </p>
       </div>
+    )}
+  </div>
 
-      <pre className="min-h-[256px] max-w-[100vw] overflow-auto whitespace-pre-wrap break-all rounded-md border bg-slate-50 p-4 shadow-sm">
-        {props.data?.map(({ text }, idx) => (
-          <span
-            key={idx}
-            onMouseEnter={() => setIndexHover(idx)}
-            onMouseLeave={() => setIndexHover(null)}
-            className={cn(
-              "transition-all",
-              (indexHover == null || indexHover === idx) &&
-                COLORS[idx % COLORS.length],
-              props.isFetching && "opacity-50"
-            )}
-          >
-            {showWhitespace || indexHover === idx
-              ? encodeWhitespace(text)
-              : text}
-          </span>
-        ))}
-      </pre>
-
-      <pre
-        className={
-          "min-h-[256px] max-w-[100vw] overflow-auto whitespace-pre-wrap break-all rounded-md border bg-slate-50 p-4 shadow-sm"
-        }
+  <pre className="min-h-[256px] max-w-[100vw] overflow-auto whitespace-pre-wrap break-all rounded-md border bg-slate-50 p-4 shadow-sm">
+    {props.data?.map(({ text, tokens }, idx) => (
+      <span
+        key={idx}
+        onMouseEnter={() => setIndexHover(idx)}
+        onMouseLeave={() => setIndexHover(null)}
+        className={cn(
+          "transition-all",
+          (indexHover == null || indexHover === idx) &&
+            COLORS[firstOccurrences[tokens[0]!.id]! % COLORS.length],
+          props.isFetching && "opacity-50"
+        )}
       >
-        {props.data && tokenCount > 0 && (
-          <span
-            className={cn(
-              "transition-opacity",
-              props.isFetching && "opacity-50"
-            )}
-          >
-            [
-            {props.data.map((segment, segmentIdx) => (
-              <Fragment key={segmentIdx}>
-                {segment.tokens.map((token) => (
-                  <Fragment key={token.idx}>
-                    <span
-                      onMouseEnter={() => setIndexHover(segmentIdx)}
-                      onMouseLeave={() => setIndexHover(null)}
-                      className={cn(
-                        "transition-colors",
-                        indexHover === segmentIdx &&
-                          COLORS[segmentIdx % COLORS.length]
-                      )}
-                    >
-                      {token.id}
-                    </span>
-                    <span className="last-of-type:hidden">{", "}</span>
-                  </Fragment>
-                ))}
+        {showWhitespace || indexHover === idx
+          ? encodeWhitespace(text)
+          : text}
+      </span>
+    ))}
+  </pre>
+
+  <pre
+    className={
+      "min-h-[256px] max-w-[100vw] overflow-auto whitespace-pre-wrap break-all rounded-md border bg-slate-50 p-4 shadow-sm"
+    }
+  >
+    {props.data && tokenCount > 0 && (
+      <span
+        className={cn(
+          "transition-opacity",
+          props.isFetching && "opacity-50"
+        )}
+      >
+        [
+        {props.data.map(({ tokens }, segmentIdx) => (
+          <Fragment key={segmentIdx}>
+            {tokens.map(({ id, idx }) => (
+              <Fragment key={idx}>
+                <span
+                  onMouseEnter={() => setIndexHover(segmentIdx)}
+                  onMouseLeave={() => setIndexHover(null)}
+                  className={cn(
+                    "transition-colors",
+                    indexHover === segmentIdx &&
+                      COLORS[firstOccurrences[id]! % COLORS.length]
+                  )}
+                >
+                  {id}
+                </span>
+                <span className="last-of-type:hidden">{", "}</span>
               </Fragment>
             ))}
-            ]
-          </span>
-        )}
-      </pre>
+          </Fragment>
+        ))}
+        ]
+      </span>
+    )}
+  </pre>
 
-      <div className="flex items-center space-x-2">
-        <Checkbox
-          id="terms"
-          checked={showWhitespace}
-          onClick={() => setShowWhitespace((v) => !v)}
-        />
-        <label
-          htmlFor="terms"
-          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        >
-          Show whitespace
-        </label>
-      </div>
-    </>
-  );
+  <div className="flex items-center space-x-2">
+    <Checkbox
+      id="terms"
+      checked={showWhitespace}
+      onClick={() => setShowWhitespace((v) => !v)}
+    />
+    <label
+      htmlFor="terms"
+      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+    >
+      Show whitespace
+    </label>
+  </div>
+</>
+);
 }
