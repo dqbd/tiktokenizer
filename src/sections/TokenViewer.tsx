@@ -91,7 +91,7 @@ export function TokenViewer(props: {
     )}
   </div>
 
-  <pre className="min-h-[256px] max-w-[100vw] overflow-auto whitespace-pre-wrap break-all rounded-md border bg-slate-50 p-4 shadow-sm">
+  <pre className="min-h-[256px] max-w-[100vw] overflow-auto whitespace-pre-wrap break-word rounded-md border bg-slate-50 p-4 shadow-sm">
     {props.data?.map(({ text, tokens }, idx) => (
       <span
         key={idx}
@@ -113,7 +113,7 @@ export function TokenViewer(props: {
 
   <pre
     className={
-      "min-h-[256px] max-w-[100vw] overflow-auto whitespace-pre-wrap break-all rounded-md border bg-slate-50 p-4 shadow-sm"
+      "min-h-[256px] max-w-[100vw] overflow-auto whitespace-pre-wrap break-word rounded-md border bg-slate-50 p-4 shadow-sm"
     }
   >
     {props.data && tokenCount > 0 && (
