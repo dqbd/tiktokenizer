@@ -73,8 +73,6 @@ export function TokenViewer(props: {
     });
   });
 
-  console.log(props.data)
-
   return (
     <>
       <div className="flex gap-4">
