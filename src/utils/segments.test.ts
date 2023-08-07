@@ -1,6 +1,6 @@
 import { it, expect } from "vitest";
 import { getSegments } from "./segments";
-import { get_encoding } from "@dqbd/tiktoken";
+import { get_encoding } from "tiktoken";
 
 it("segments equality test", () => {
   const encoder = get_encoding("cl100k_base");

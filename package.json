@@ -9,7 +9,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "@dqbd/tiktoken": "^1.0.4",
+    "tiktoken": "^1.0.10",
     "@radix-ui/react-checkbox": "^1.0.3",
     "@radix-ui/react-popover": "^1.0.5",
     "@radix-ui/react-select": "^1.2.0",

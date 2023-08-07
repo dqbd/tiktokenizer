@@ -1,4 +1,4 @@
-import { type Tiktoken } from "@dqbd/tiktoken";
+import { type Tiktoken } from "tiktoken";
 import Graphemer from "graphemer";
 
 const textDecoder = new TextDecoder();

@@ -12,7 +12,7 @@ import {
   get_encoding,
   type TiktokenModel,
   type TiktokenEncoding,
-} from "@dqbd/tiktoken";
+} from "tiktoken";
 import { getSegments } from "~/utils/segments";
 
 function getUserSelectedEncoder(

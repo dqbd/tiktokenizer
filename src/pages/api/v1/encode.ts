@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { encoding_for_model, get_encoding } from "@dqbd/tiktoken";
+import { encoding_for_model, get_encoding } from "tiktoken";
 import { z } from "zod";
 
 export default async function handler(
