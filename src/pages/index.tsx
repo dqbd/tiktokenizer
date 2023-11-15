@@ -22,7 +22,8 @@ function getUserSelectedEncoder(
     if (
       params.model === "gpt-4" ||
       params.model === "gpt-4-32k" ||
-      params.model === "gpt-3.5-turbo"
+      params.model === "gpt-3.5-turbo" ||
+      params.model === "gpt-4-1106-preview"
     ) {
       return encoding_for_model(params.model, {
         "<|im_start|>": 100264,
@@ -43,11 +44,14 @@ function getUserSelectedEncoder(
 
 function isChatModel(
   params: { model: TiktokenModel } | { encoder: TiktokenEncoding }
-): params is { model: "gpt-3.5-turbo" | "gpt-4" | "gpt-4-32k" } {
+): params is {
+  model: "gpt-3.5-turbo" | "gpt-4" | "gpt-4-32k" | "gpt-4-1106-preview";
+} {
   return (
     "model" in params &&
     (params.model === "gpt-3.5-turbo" ||
       params.model === "gpt-4" ||
+      params.model === "gpt-4-1106-preview" ||
       params.model === "gpt-4-32k")
   );
 }

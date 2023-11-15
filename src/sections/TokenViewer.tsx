@@ -28,8 +28,10 @@ const COLORS = [
 
 const PRICING: Record<string, BN> = {
   "gpt-4": BN("0.03").div(1000),
+  "gpt-4-1106-preview": BN("0.01").div(1000),
   "gpt-4-32k": BN("0.03").div(1000),
-  "gpt-3.5-turbo": BN("0.002").div(1000),
+  "gpt-3.5-turbo": BN("0.0010").div(1000),
+  "gpt-3.5-instruct": BN("0.0015").div(1000),
 };
 
 function encodeWhitespace(str: string) {

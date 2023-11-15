@@ -46,10 +46,11 @@ const MODELS = [
   "gpt-4",
   "gpt-4-32k",
   "gpt-3.5-turbo",
+  "gpt-4-1106-preview",
 ];
 
 const POPULAR = [
-  "gpt-4",
+  "gpt-4-1106-preview",
   "gpt-4-32k",
   "gpt-3.5-turbo",
   "text-davinci-003",
