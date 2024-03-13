@@ -1,69 +1,60 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Github, Twitter } from "lucide-react";
 
 import { ChatGPTEditor } from "../sections/ChatGPTEditor";
 import { EncoderSelect } from "~/sections/EncoderSelect";
 import { TokenViewer } from "~/sections/TokenViewer";
 import { TextArea } from "~/components/Input";
-import {
-  encoding_for_model,
-  get_encoding,
-  type TiktokenModel,
-  type TiktokenEncoding,
-} from "tiktoken";
-import { getSegments } from "~/utils/segments";
+import { type AllOptions, isChatModel } from "~/models";
+import { type Tokenizer, createTokenizer } from "~/models/tokenizer";
 
-function getUserSelectedEncoder(
-  params: { model: TiktokenModel } | { encoder: TiktokenEncoding }
-) {
-  if ("model" in params) {
-    if (
-      params.model === "gpt-4" ||
-      params.model === "gpt-4-32k" ||
-      params.model === "gpt-3.5-turbo" ||
-      params.model === "gpt-4-1106-preview"
-    ) {
-      return encoding_for_model(params.model, {
-        "<|im_start|>": 100264,
-        "<|im_end|>": 100265,
-        "<|im_sep|>": 100266,
-      });
-    }
+// State is text, model, the tokenizer, and tokenizer loading state
+function useTokens() {
+  const [inputText, setInputText] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const [model, _setModel] = useState<AllOptions>("cl100k_base");
+  const [tokenizer, setTokenizer] = useState<Tokenizer | undefined>();
 
-    return encoding_for_model(params.model);
-  }
-
-  if ("encoder" in params) {
-    return get_encoding(params.encoder);
-  }
-
-  throw new Error("Invalid params");
-}
-
-function isChatModel(
-  params: { model: TiktokenModel } | { encoder: TiktokenEncoding }
-): params is {
-  model: "gpt-3.5-turbo" | "gpt-4" | "gpt-4-32k" | "gpt-4-1106-preview";
-} {
-  return (
-    "model" in params &&
-    (params.model === "gpt-3.5-turbo" ||
-      params.model === "gpt-4" ||
-      params.model === "gpt-4-1106-preview" ||
-      params.model === "gpt-4-32k")
+  const setModel = useCallback(
+    async (desiredModel: AllOptions) => {
+      console.log("setModel", desiredModel);
+      if (loading) {
+        console.log("already loading", model);
+        return;
+      }
+      _setModel(desiredModel);
+      setLoading(true);
+      const t = await createTokenizer(desiredModel);
+      setTokenizer(t);
+      setLoading(false);
+    },
+    [loading, setLoading, model]
   );
+
+  const tokens = tokenizer?.tokenize(inputText);
+  if (!tokenizer) {
+    setModel(model);
+  }
+
+  return {
+    inputText,
+    setInputText,
+    loading,
+    model,
+    setModel,
+    tokens,
+  };
 }
 
 const Home: NextPage = () => {
-  const [inputText, setInputText] = useState<string>("");
-  const [params, setParams] = useState<
-    { model: TiktokenModel } | { encoder: TiktokenEncoding }
-  >({ model: "gpt-3.5-turbo" });
+  // const [params, setParams] = useState<
+  //   { model: TiktokenModel } | { encoder: TiktokenEncoding }
+  // >({ model: "gpt-3.5-turbo" });
 
-  const [encoder, setEncoder] = useState(() => getUserSelectedEncoder(params));
-  const data = getSegments(encoder, inputText);
+  const { inputText, setInputText, loading, model, setModel, tokens } =
+    useTokens();
 
   return (
     <>
@@ -76,26 +67,20 @@ const Home: NextPage = () => {
           <h1 className="text-4xl font-bold">Tiktokenizer</h1>
 
           <EncoderSelect
-            value={params}
+            value={model}
             onChange={(update) => {
-              setEncoder((encoder) => {
-                encoder.free();
-                return getUserSelectedEncoder(update);
-              });
-
-              if (isChatModel(update) !== isChatModel(params)) {
+              setModel(update);
+              if (isChatModel(update) !== isChatModel(model)) {
                 setInputText("");
               }
-
-              setParams(update);
             }}
           />
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
           <section className="flex flex-col gap-4">
-            {isChatModel(params) && (
-              <ChatGPTEditor model={params.model} onChange={setInputText} />
+            {isChatModel(model) && (
+              <ChatGPTEditor model={model} onChange={setInputText} />
             )}
 
             <TextArea
@@ -106,11 +91,7 @@ const Home: NextPage = () => {
           </section>
 
           <section className="flex flex-col gap-4">
-            <TokenViewer
-              model={"model" in params ? params.model : undefined}
-              data={data}
-              isFetching={false}
-            />
+            <TokenViewer model={model} data={tokens} isFetching={false} />
           </section>
         </div>
         <style jsx>

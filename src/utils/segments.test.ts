@@ -1,5 +1,5 @@
 import { it, expect } from "vitest";
-import { getSegments } from "./segments";
+import { getTiktokenSegments } from "./segments";
 import { get_encoding } from "tiktoken";
 
 it("segments equality test", () => {
@@ -15,7 +15,7 @@ it("segments equality test", () => {
   ];
 
   for (const fixture of fixtures) {
-    const segments = getSegments(encoder, fixture);
+    const segments = getTiktokenSegments(encoder, fixture);
     const tokens = encoder.encode(fixture, "all");
 
     expect(segments.map((i) => i.text).join("")).toEqual(
@@ -45,7 +45,7 @@ it("segments grapheme test", () => {
   const encoder = get_encoding("cl100k_base");
 
   for (const [input, output] of Object.entries(fixtures)) {
-    const segments = getSegments(encoder, input);
+    const segments = getTiktokenSegments(encoder, input);
     expect(segments.map((i) => i.text)).toEqual(output);
   }
 });
