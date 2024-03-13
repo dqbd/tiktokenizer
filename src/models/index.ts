@@ -66,6 +66,7 @@ export const oaiModels = z.enum([
 
 export const openSourceModels = z.enum([
   "meta-llama/Llama-2-7b",
+  "codellama/CodeLlama-7b-hf",
   "google/gemma-7b",
 ]);
 
@@ -88,11 +89,8 @@ export const MODELS = allModels.options;
 export const POPULAR: z.infer<typeof allOptions>[] = [
   "cl100k_base",
   "gpt-4-1106-preview",
-  "gpt-4-32k",
   "gpt-3.5-turbo",
-  "text-davinci-003",
-  "text-embedding-ada-002",
-  "meta-llama/Llama-2-7b",
+  "codellama/CodeLlama-7b-hf",
 ];
 
 export function isChatModel(

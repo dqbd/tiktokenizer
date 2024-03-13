@@ -1,8 +1,12 @@
 import { get_encoding, encoding_for_model, type Tiktoken } from "tiktoken";
 import { oaiEncodings, oaiModels, openSourceModels } from ".";
-import { PreTrainedTokenizer } from "@xenova/transformers";
+import { PreTrainedTokenizer, env } from "@xenova/transformers";
 import type { z } from "zod";
-import { getTiktokenSegments, type Segment } from "~/utils/segments";
+import {
+  getHuggingfaceSegments,
+  getTiktokenSegments,
+  type Segment,
+} from "~/utils/segments";
 
 export interface TokenizerResult {
   name: string;
@@ -76,14 +80,19 @@ export class OpenSourceTokenizer implements Tokenizer {
   static async load(
     model: z.infer<typeof openSourceModels>
   ): Promise<PreTrainedTokenizer> {
-    return PreTrainedTokenizer.from_pretrained(model);
+    return await PreTrainedTokenizer.from_pretrained(model, {
+      progress_callback: (progress: any) => console.log("progress", progress),
+    });
   }
 
   tokenize(text: string): TokenizerResult {
-    const tokens = this.tokenizer(text);
+    // const tokens = this.tokenizer(text);
+    const tokens = this.tokenizer.encode(text);
+    console.log("tokenize with", this.name, tokens);
     return {
       name: this.name,
       tokens,
+      segments: getHuggingfaceSegments(this.tokenizer, text),
       count: tokens.length,
     };
   }
@@ -104,7 +113,9 @@ export async function createTokenizer(name: string): Promise<Tokenizer> {
 
   const ossModel = openSourceModels.safeParse(name);
   if (ossModel.success) {
+    console.log("loading tokenizer", ossModel.data);
     const tokenizer = await OpenSourceTokenizer.load(ossModel.data);
+    console.log("loaded tokenizer", tokenizer.name);
     return new OpenSourceTokenizer(tokenizer);
   }
   throw new Error("Invalid model or encoding");

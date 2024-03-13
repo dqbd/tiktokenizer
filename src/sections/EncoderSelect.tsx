@@ -1,4 +1,3 @@
-import type { TiktokenEncoding, TiktokenModel } from "tiktoken";
 import { ChevronsUpDown } from "lucide-react";
 import { useState } from "react";
 import { Button } from "~/components/Button";
@@ -12,11 +11,10 @@ import {
 } from "~/components/Command";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/Popover";
 import {
-  AllOptions,
+  type AllOptions,
   POPULAR,
   allModels,
   allOptions,
-  chatModels,
   isValidOption,
   oaiEncodings,
 } from "~/models";
@@ -28,7 +26,7 @@ export function EncoderSelect(props: {
   const [open, setOpen] = useState(false);
   const { value } = props;
 
-  const onSelect = (v: string) => {
+  const onSelect = (v: AllOptions) => () => {
     setOpen(false);
     if (isValidOption(v)) {
       props.onChange(v);
@@ -56,7 +54,11 @@ export function EncoderSelect(props: {
             <CommandEmpty>No model or encoder found.</CommandEmpty>
             <CommandGroup heading="Popular">
               {POPULAR.map((value) => (
-                <CommandItem key={value} value={value} onSelect={onSelect}>
+                <CommandItem
+                  key={value}
+                  value={value}
+                  onSelect={onSelect(value)}
+                >
                   {value}
                 </CommandItem>
               ))}
@@ -68,7 +70,11 @@ export function EncoderSelect(props: {
               {oaiEncodings.options
                 .filter((x) => !POPULAR.includes(x))
                 .map((value) => (
-                  <CommandItem key={value} value={value} onSelect={onSelect}>
+                  <CommandItem
+                    key={value}
+                    value={value}
+                    onSelect={onSelect(value)}
+                  >
                     {value}
                   </CommandItem>
                 ))}
@@ -81,9 +87,9 @@ export function EncoderSelect(props: {
                 .filter((x) => !POPULAR.includes(x))
                 .map((value) => (
                   <CommandItem
-                    key={value as unknown as string}
+                    key={value}
                     value={value}
-                    onSelect={onSelect}
+                    onSelect={onSelect(value)}
                   >
                     {value}
                   </CommandItem>

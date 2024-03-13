@@ -17,7 +17,7 @@ export function getTiktokenSegments(
   encoder: Tiktoken,
   inputText: string
 ): Segment[] {
-  const encoding = encoder.encode(inputText, "all");
+  const tokens = encoder.encode(inputText, "all");
   const segments: { text: string; tokens: { id: number; idx: number }[] }[] =
     [];
 
@@ -25,8 +25,8 @@ export function getTiktokenSegments(
   let tokenAcc: { id: number; idx: number }[] = [];
   let inputGraphemes = graphemer.splitGraphemes(inputText);
 
-  for (let idx = 0; idx < encoding.length; idx++) {
-    const token = encoding[idx]!;
+  for (let idx = 0; idx < tokens.length; idx++) {
+    const token = tokens[idx]!;
     byteAcc.push(...encoder.decode_single_token_bytes(token));
     tokenAcc.push({ id: token, idx });
 
@@ -49,7 +49,10 @@ export function getHuggingfaceSegments(
   tokenizer: PreTrainedTokenizer,
   inputText: string
 ): Segment[] {
-  const encoding = tokenizer.encode(inputText);
+  const tokens = tokenizer.encode(inputText);
+  // remove first token, which is always <s>?
+  tokens.shift();
+  console.log("HF tokens", tokens);
   const te = new TextEncoder();
   const segments: { text: string; tokens: { id: number; idx: number }[] }[] =
     [];
@@ -58,21 +61,30 @@ export function getHuggingfaceSegments(
   let tokenAcc: { id: number; idx: number }[] = [];
   let inputGraphemes = graphemer.splitGraphemes(inputText);
 
-  for (let idx = 0; idx < encoding.length; idx++) {
-    const token = encoding[idx]!;
+  for (let idx = 0; idx < tokens.length; idx++) {
+    const token = tokens[idx]!;
     const single = tokenizer.decode_single([token], {
-      clean_up_tokenization_spaces: false,
+      clean_up_tokenization_spaces: true,
       skip_special_tokens: false,
     });
+    console.log("HF single", single);
     byteAcc.push(...te.encode(single));
     tokenAcc.push({ id: token, idx });
 
-    const segmentText = textDecoder.decode(new Uint8Array(byteAcc));
-    const graphemes = graphemer.splitGraphemes(segmentText);
+    // const segmentText = textDecoder.decode(new Uint8Array(byteAcc));
+    // const graphemes = graphemer.splitGraphemes(segmentText);
+    const graphemes = graphemer.splitGraphemes(single);
+    console.log("HF graphemes", graphemes, "input", inputGraphemes);
 
     if (graphemes.every((item, idx) => inputGraphemes[idx] === item)) {
-      segments.push({ text: segmentText, tokens: tokenAcc });
+      segments.push({ text: single, tokens: tokenAcc });
 
+      byteAcc = [];
+      tokenAcc = [];
+      inputGraphemes = inputGraphemes.slice(graphemes.length);
+    } else {
+      console.log("HF mismatch", graphemes, inputGraphemes);
+      segments.push({ text: single, tokens: tokenAcc });
       byteAcc = [];
       tokenAcc = [];
       inputGraphemes = inputGraphemes.slice(graphemes.length);
