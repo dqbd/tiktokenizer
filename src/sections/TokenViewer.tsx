@@ -3,6 +3,7 @@ import { cn } from "~/utils/cn";
 
 import BN from "bignumber.js";
 import { Checkbox } from "~/components/Checkbox";
+import { TokenizerResult } from "~/models/tokenizer";
 
 const COLORS = [
   "bg-sky-200",
@@ -53,14 +54,12 @@ function encodeWhitespace(str: string) {
 export function TokenViewer(props: {
   isFetching: boolean;
   model: string | undefined;
-  data:
-    | Array<{ text: string; tokens: { id: number; idx: number }[] }>
-    | undefined;
+  data: TokenizerResult | undefined;
 }) {
   const [indexHover, setIndexHover] = useState<null | number>(null);
 
   const tokenCount =
-    props.data?.reduce((memo, i) => memo + i.tokens.length, 0) ?? 0;
+    props.data?.segments?.reduce((memo, i) => memo + i.tokens.length, 0) ?? 0;
   const pricing = props.model != null ? PRICING[props.model] : undefined;
 
   const [showWhitespace, setShowWhitespace] = useState(false);
@@ -84,7 +83,7 @@ export function TokenViewer(props: {
       </div>
 
       <pre className="min-h-[256px] max-w-[100vw] overflow-auto whitespace-pre-wrap break-all rounded-md border bg-slate-50 p-4 shadow-sm">
-        {props.data?.map(({ text }, idx) => (
+        {props.data?.segments?.map(({ text }, idx) => (
           <span
             key={idx}
             onMouseEnter={() => setIndexHover(idx)}
@@ -115,8 +114,7 @@ export function TokenViewer(props: {
               props.isFetching && "opacity-50"
             )}
           >
-            [
-            {props.data.map((segment, segmentIdx) => (
+            {props.data?.segments?.map((segment, segmentIdx) => (
               <Fragment key={segmentIdx}>
                 {segment.tokens.map((token) => (
                   <Fragment key={token.idx}>
