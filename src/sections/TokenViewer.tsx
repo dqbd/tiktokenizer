@@ -3,7 +3,7 @@ import { cn } from "~/utils/cn";
 
 import BN from "bignumber.js";
 import { Checkbox } from "~/components/Checkbox";
-import { TokenizerResult } from "~/models/tokenizer";
+import { type TokenizerResult } from "~/models/tokenizer";
 
 const COLORS = [
   "bg-sky-200",
@@ -134,7 +134,6 @@ export function TokenViewer(props: {
                 ))}
               </Fragment>
             ))}
-            ]
           </span>
         )}
       </pre>
