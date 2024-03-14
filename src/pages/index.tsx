@@ -1,10 +1,19 @@
-import { type NextPage } from "next";
+import {
+  type GetServerSideProps,
+  type InferGetServerSidePropsType,
+  type NextPage,
+} from "next";
 import Head from "next/head";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Github, Twitter } from "lucide-react";
 
 import { ChatGPTEditor } from "../sections/ChatGPTEditor";
-import { EncoderSelect } from "~/sections/EncoderSelect";
+import {
+  EncoderSelect,
+  type ModelOnly,
+  isEncoder,
+  isModel,
+} from "~/sections/EncoderSelect";
 import { TokenViewer } from "~/sections/TokenViewer";
 import { TextArea } from "~/components/Input";
 import {
@@ -14,6 +23,7 @@ import {
   type TiktokenEncoding,
 } from "tiktoken";
 import { getSegments } from "~/utils/segments";
+import { useRouter } from "next/router";
 
 function getUserSelectedEncoder(
   params: { model: TiktokenModel } | { encoder: TiktokenEncoding }
@@ -56,11 +66,39 @@ function isChatModel(
   );
 }
 
-const Home: NextPage = () => {
+function useParams() {
+  const router = useRouter();
+
+  const params = useMemo((): ModelOnly => {
+    if (typeof router.query.model === "string" && isModel(router.query.model)) {
+      return { model: router.query.model };
+    }
+
+    if (
+      typeof router.query.encoder === "string" &&
+      isEncoder(router.query.encoder)
+    ) {
+      return { encoder: router.query.encoder };
+    }
+
+    return { model: "gpt-3.5-turbo" };
+  }, [router.query]);
+
+  const setParams = (model: ModelOnly) => {
+    router.push({
+      pathname: router.pathname,
+      query: model,
+    });
+  };
+
+  return [params, setParams] as const;
+}
+const Home: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = (
+  props
+) => {
   const [inputText, setInputText] = useState<string>("");
-  const [params, setParams] = useState<
-    { model: TiktokenModel } | { encoder: TiktokenEncoding }
-  >({ model: "gpt-3.5-turbo" });
+
+  const [params, setParams] = useParams();
 
   const [encoder, setEncoder] = useState(() => getUserSelectedEncoder(params));
   const data = getSegments(encoder, inputText);
@@ -188,6 +226,10 @@ const Home: NextPage = () => {
       </main>
     </>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  return { props: { query: context.query } };
 };
 
 export default Home;
