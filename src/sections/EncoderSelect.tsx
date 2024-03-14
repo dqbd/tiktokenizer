@@ -61,15 +61,19 @@ const CHAT_GPT_MODELS = ["gpt-3.5-turbo", "gpt-4", "gpt-4-32k"];
 
 const ENCODERS = ["gpt2", "cl100k_base", "p50k_base", "p50k_edit", "r50k_base"];
 
-function isEncoder(encoder: string | undefined): encoder is TiktokenEncoding {
+export function isEncoder(
+  encoder: string | undefined
+): encoder is TiktokenEncoding {
   return !!encoder?.includes(encoder as TiktokenEncoding);
 }
 
-function isModel(model: string | undefined): model is TiktokenModel {
+export function isModel(model: string | undefined): model is TiktokenModel {
   return !!model?.includes(model as TiktokenModel);
 }
 
-type ModelOnly = { model: TiktokenModel } | { encoder: TiktokenEncoding };
+export type ModelOnly =
+  | { model: TiktokenModel }
+  | { encoder: TiktokenEncoding };
 
 export function EncoderSelect(props: {
   value: ModelOnly;
