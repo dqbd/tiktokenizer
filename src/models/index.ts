@@ -67,6 +67,8 @@ export const oaiModels = z.enum([
 export const openSourceModels = z.enum([
   "meta-llama/Llama-2-7b",
   "codellama/CodeLlama-7b-hf",
+  "codellama/CodeLlama-70b-hf",
+  "microsoft/phi-2",
   "google/gemma-7b",
 ]);
 
