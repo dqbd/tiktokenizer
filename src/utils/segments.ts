@@ -1,6 +1,6 @@
 import { type Tiktoken } from "tiktoken";
 import Graphemer from "graphemer";
-import { PreTrainedTokenizer } from "@xenova/transformers";
+import { type PreTrainedTokenizer } from "@xenova/transformers";
 
 const textDecoder = new TextDecoder();
 const graphemer = new Graphemer();
@@ -61,10 +61,19 @@ export function getHuggingfaceSegments(
   let tokenAcc: { id: number; idx: number }[] = [];
   let inputGraphemes = graphemer.splitGraphemes(inputText);
 
+  const tokenStrs = tokenizer.model.convert_ids_to_tokens(tokens);
+  const dec = tokenizer.decoder ?? ((x: string) => x);
+  console.log("decoder", dec, dec.config);
+  return tokenStrs.map((token, idx) => ({
+    // This is extremely dumb and I hate it. Oh, sentencepiece!
+    text: idx == 0 ? dec([token]) : dec([" ", token]),
+    tokens: [{ id: tokens[idx]!, idx }],
+  }));
+
   for (let idx = 0; idx < tokens.length; idx++) {
     const token = tokens[idx]!;
     const single = tokenizer.decode_single([token], {
-      clean_up_tokenization_spaces: true,
+      clean_up_tokenization_spaces: false,
       skip_special_tokens: false,
     });
     console.log("HF single", single);

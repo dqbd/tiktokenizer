@@ -12,9 +12,20 @@ import { type Tokenizer, createTokenizer } from "~/models/tokenizer";
 
 // State is text, model, the tokenizer, and tokenizer loading state
 function useTokens() {
-  const [inputText, setInputText] = useState<string>("");
+  const [inputText, setInputText] = useState<string>(`<!DOCTYPE html>
+  <html>
+    <head>
+      <title>Page Title</title>
+    </head>
+    <body>
+
+      <h1>This is a Heading</h1>
+      <p>This is a paragraph.</p>
+
+  </body>
+</html>`);
   const [loading, setLoading] = useState(false);
-  const [model, _setModel] = useState<AllOptions>("cl100k_base");
+  const [model, _setModel] = useState<AllOptions>("codellama/CodeLlama-7b-hf");
   const [tokenizer, setTokenizer] = useState<Tokenizer | undefined>();
 
   const setModel = useCallback(
