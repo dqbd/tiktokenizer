@@ -86,7 +86,7 @@ function useParams() {
 
   const setParams = (model: ModelOnly) => {
     router.push({
-      pathname: router.asPath,
+      pathname: router.pathname,
       query: model,
     });
   };
