@@ -17,6 +17,8 @@ import {
   allOptions,
   isValidOption,
   oaiEncodings,
+  oaiModels,
+  openSourceModels,
 } from "~/models";
 
 export function EncoderSelect(props: {
@@ -66,7 +68,23 @@ export function EncoderSelect(props: {
 
             <CommandSeparator />
 
-            <CommandGroup heading="Encoders">
+            <CommandGroup heading="Open-Source Models">
+              {openSourceModels.options
+                .filter((x) => !POPULAR.includes(x))
+                .map((value) => (
+                  <CommandItem
+                    key={value}
+                    value={value}
+                    onSelect={onSelect(value)}
+                  >
+                    {value}
+                  </CommandItem>
+                ))}
+            </CommandGroup>
+
+            <CommandSeparator />
+
+            <CommandGroup heading="OpenAI Encodings">
               {oaiEncodings.options
                 .filter((x) => !POPULAR.includes(x))
                 .map((value) => (
@@ -82,8 +100,8 @@ export function EncoderSelect(props: {
 
             <CommandSeparator />
 
-            <CommandGroup heading="Models">
-              {allModels.options
+            <CommandGroup heading="OpenAI Models">
+              {oaiModels.options
                 .filter((x) => !POPULAR.includes(x))
                 .map((value) => (
                   <CommandItem

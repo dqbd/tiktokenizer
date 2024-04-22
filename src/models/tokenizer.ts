@@ -80,6 +80,13 @@ export class OpenSourceTokenizer implements Tokenizer {
   static async load(
     model: z.infer<typeof openSourceModels>
   ): Promise<PreTrainedTokenizer> {
+    // use current host as proxy if we're running on the client
+    if (typeof window !== "undefined") {
+      env.remoteHost = window.location.origin;
+    }
+    env.remotePathTemplate = "/api/v1/proxy/{model}";
+    // Set to false for testing!
+    env.useBrowserCache = false;
     return await PreTrainedTokenizer.from_pretrained(model, {
       progress_callback: (progress: any) => console.log("progress", progress),
     });

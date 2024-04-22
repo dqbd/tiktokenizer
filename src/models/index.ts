@@ -65,11 +65,14 @@ export const oaiModels = z.enum([
 ]);
 
 export const openSourceModels = z.enum([
-  "meta-llama/Llama-2-7b",
+  "meta-llama/Llama-2-7b-hf",
   "codellama/CodeLlama-7b-hf",
   "codellama/CodeLlama-70b-hf",
   "microsoft/phi-2",
   "google/gemma-7b",
+  "mistralai/Mistral-7B-v0.1",
+  "tiiuae/falcon-7b",
+  "01-ai/Yi-6B",
 ]);
 
 export const allModels = z.enum([
