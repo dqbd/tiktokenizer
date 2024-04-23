@@ -68,12 +68,24 @@ export const openSourceModels = z.enum([
   "meta-llama/Llama-2-7b-hf",
   "codellama/CodeLlama-7b-hf",
   "codellama/CodeLlama-70b-hf",
+  "meta-llama/Meta-Llama-3-8B",
+  "meta-llama/Meta-Llama-3-70B",
   "microsoft/phi-2",
   "google/gemma-7b",
   "mistralai/Mistral-7B-v0.1",
   "tiiuae/falcon-7b",
   "01-ai/Yi-6B",
 ]);
+
+export function tempLlama3HackGetRevision(model: AllModels): string {
+  if (model === "meta-llama/Meta-Llama-3-8B") {
+    return "refs/pr/35";
+  } else if (model === "meta-llama/Meta-Llama-3-70B") {
+    return "refs/pr/5";
+  } else {
+    return "main";
+  }
+}
 
 export const allModels = z.enum([
   ...oaiModels.options,

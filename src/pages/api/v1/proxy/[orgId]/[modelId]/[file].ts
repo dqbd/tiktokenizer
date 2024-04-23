@@ -1,6 +1,7 @@
 // import type { NextApiRequest, NextApiResponse } from "next";
 import type { NextRequest } from "next/server";
 import { z } from "zod";
+import { tempLlama3HackGetRevision, openSourceModels } from "~/models";
 
 export const config = { runtime: "edge" };
 
@@ -22,14 +23,19 @@ async function handler(req: NextRequest) {
   const params = Object.fromEntries(url.searchParams.entries());
   // Check if the requested model and file a
   const { orgId, modelId, file } = RequestSchema.parse(params);
+  // todo: only allow gated models in the future
+  const modelName = openSourceModels.parse(`${orgId}/${modelId}`);
   // Proxy request to HuggingFace with an API key that can read the tokenizer.json dict and the tokenizer_config.json
   if (req.method !== "GET") {
     return new Response("Method not allowed", { status: 405 });
   }
+  const rev = tempLlama3HackGetRevision(modelName);
   try {
     // eg https://huggingface.co/codellama/CodeLlama-7b-hf/resolve/main/tokenizer.json
     const r = await fetch(
-      `https://huggingface.co/${orgId}/${modelId}/resolve/main/${file}`,
+      `https://huggingface.co/${orgId}/${modelId}/resolve/${encodeURIComponent(
+        rev
+      )}/${file}`,
       {
         headers: {
           Authorization: `Bearer ${HF_API_KEY}`,
