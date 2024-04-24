@@ -44,11 +44,14 @@ export function getTiktokenSegments(
 
 export function getHuggingfaceSegments(
   tokenizer: PreTrainedTokenizer,
-  inputText: string
+  inputText: string,
+  removeFirstToken = false
 ): Segment[] {
   const tokens = tokenizer.encode(inputText);
-  // remove first token, which is always <s>?
-  tokens.shift();
+  if (removeFirstToken) {
+    // remove first token, which is always <s> if we're on llama2
+    tokens.shift();
+  }
 
   const segments: { text: string; tokens: { id: number; idx: number }[] }[] =
     [];

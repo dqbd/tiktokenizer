@@ -1,3 +1,4 @@
+import { hackModelsRemoveFirstToken } from "./index";
 import { get_encoding, encoding_for_model, type Tiktoken } from "tiktoken";
 import { oaiEncodings, oaiModels, openSourceModels } from ".";
 import { PreTrainedTokenizer, env } from "@xenova/transformers";
@@ -71,11 +72,11 @@ export class TiktokenTokenizer implements Tokenizer {
 }
 
 export class OpenSourceTokenizer implements Tokenizer {
-  constructor(private tokenizer: PreTrainedTokenizer) {}
-
-  get name() {
-    return this.tokenizer.name;
+  constructor(private tokenizer: PreTrainedTokenizer, name?: string) {
+    this.name = name ?? tokenizer.name;
   }
+
+  name: string;
 
   static async load(
     model: z.infer<typeof openSourceModels>
@@ -86,7 +87,7 @@ export class OpenSourceTokenizer implements Tokenizer {
     }
     env.remotePathTemplate = "/api/v1/proxy/{model}";
     // Set to false for testing!
-    env.useBrowserCache = false;
+    // env.useBrowserCache = false;
     const t = await PreTrainedTokenizer.from_pretrained(model, {
       progress_callback: (progress: any) =>
         console.log(`loading "${model}"`, progress),
@@ -98,11 +99,13 @@ export class OpenSourceTokenizer implements Tokenizer {
   tokenize(text: string): TokenizerResult {
     // const tokens = this.tokenizer(text);
     const tokens = this.tokenizer.encode(text);
-    console.log("tokenize with", this.name, tokens);
+    const removeFirstToken = (
+      hackModelsRemoveFirstToken.options as string[]
+    ).includes(this.name);
     return {
       name: this.name,
       tokens,
-      segments: getHuggingfaceSegments(this.tokenizer, text),
+      segments: getHuggingfaceSegments(this.tokenizer, text, removeFirstToken),
       count: tokens.length,
     };
   }
@@ -125,8 +128,8 @@ export async function createTokenizer(name: string): Promise<Tokenizer> {
   if (ossModel.success) {
     console.log("loading tokenizer", ossModel.data);
     const tokenizer = await OpenSourceTokenizer.load(ossModel.data);
-    console.log("loaded tokenizer", tokenizer.name);
-    return new OpenSourceTokenizer(tokenizer);
+    console.log("loaded tokenizer", name);
+    return new OpenSourceTokenizer(tokenizer, name);
   }
   throw new Error("Invalid model or encoding");
 }
