@@ -88,6 +88,7 @@ export function tempLlama3HackGetRevision(model: AllModels): string {
 }
 
 export const hackModelsRemoveFirstToken = z.enum([
+  "meta-llama/Llama-2-7b-hf",
   "codellama/CodeLlama-7b-hf",
   "codellama/CodeLlama-70b-hf",
 ]);
