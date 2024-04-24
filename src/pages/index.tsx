@@ -1,6 +1,6 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 import { Github, Twitter } from "lucide-react";
 
 import { ChatGPTEditor } from "../sections/ChatGPTEditor";
@@ -8,10 +8,10 @@ import { EncoderSelect } from "~/sections/EncoderSelect";
 import { TokenViewer } from "~/sections/TokenViewer";
 import { TextArea } from "~/components/Input";
 import { type AllOptions, isChatModel } from "~/models";
-import { type Tokenizer, createTokenizer } from "~/models/tokenizer";
+import { createTokenizer } from "~/models/tokenizer";
+import { useQuery } from "@tanstack/react-query";
 
-// State is text, model, the tokenizer, and tokenizer loading state
-function useTokens() {
+const Home: NextPage = () => {
   const [inputText, setInputText] = useState<string>(`<!DOCTYPE html>
   <html>
     <head>
@@ -24,48 +24,14 @@ function useTokens() {
 
   </body>
 </html>`);
-  const [loading, setLoading] = useState(false);
-  const [model, _setModel] = useState<AllOptions>("codellama/CodeLlama-7b-hf");
-  const [tokenizer, setTokenizer] = useState<Tokenizer | undefined>();
 
-  const setModel = useCallback(
-    async (desiredModel: AllOptions) => {
-      console.log("setModel", desiredModel);
-      if (loading) {
-        console.log("already loading", model);
-        return;
-      }
-      _setModel(desiredModel);
-      setLoading(true);
-      const t = await createTokenizer(desiredModel);
-      setTokenizer(t);
-      setLoading(false);
-    },
-    [loading, setLoading, model]
-  );
+  const [model, setModel] = useState<AllOptions>("codellama/CodeLlama-7b-hf");
+  const tokenizer = useQuery({
+    queryKey: [model],
+    queryFn: ({ queryKey: [model] }) => createTokenizer(model!),
+  });
 
-  const tokens = tokenizer?.tokenize(inputText);
-  if (!tokenizer) {
-    setModel(model);
-  }
-
-  return {
-    inputText,
-    setInputText,
-    loading,
-    model,
-    setModel,
-    tokens,
-  };
-}
-
-const Home: NextPage = () => {
-  // const [params, setParams] = useState<
-  //   { model: TiktokenModel } | { encoder: TiktokenEncoding }
-  // >({ model: "gpt-3.5-turbo" });
-
-  const { inputText, setInputText, loading, model, setModel, tokens } =
-    useTokens();
+  const tokens = tokenizer.data?.tokenize(inputText);
 
   return (
     <>
