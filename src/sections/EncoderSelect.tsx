@@ -13,7 +13,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "~/components/Popover";
 import {
   type AllOptions,
   POPULAR,
-  allModels,
   allOptions,
   isValidOption,
   oaiEncodings,

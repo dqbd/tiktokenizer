@@ -127,6 +127,6 @@ export function isChatModel(
   );
 }
 
-export function isValidOption(model: string | undefined): model is AllOptions {
+export function isValidOption(model: unknown): model is AllOptions {
   return allOptions.safeParse(model).success;
 }

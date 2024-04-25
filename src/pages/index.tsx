@@ -1,19 +1,45 @@
-import { type NextPage } from "next";
+import {
+  type GetServerSideProps,
+  type InferGetServerSidePropsType,
+  type NextPage,
+} from "next";
 import Head from "next/head";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Github, Twitter } from "lucide-react";
 
 import { ChatGPTEditor } from "../sections/ChatGPTEditor";
 import { EncoderSelect } from "~/sections/EncoderSelect";
 import { TokenViewer } from "~/sections/TokenViewer";
 import { TextArea } from "~/components/Input";
-import { type AllOptions, isChatModel } from "~/models";
+import { type AllOptions, isChatModel, isValidOption } from "~/models";
 import { createTokenizer } from "~/models/tokenizer";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/router";
 
-const Home: NextPage = () => {
+function useQueryParamsState() {
+  const router = useRouter();
+
+  const params = useMemo((): AllOptions => {
+    return isValidOption(router.query?.model)
+      ? router.query.model
+      : "gpt-3.5-turbo";
+  }, [router.query]);
+
+  const setParams = (model: AllOptions) => {
+    router.push({
+      pathname: router.pathname,
+      query: { model },
+    });
+  };
+
+  return [params, setParams] as const;
+}
+
+const Home: NextPage<
+  InferGetServerSidePropsType<typeof getServerSideProps>
+> = () => {
   const [inputText, setInputText] = useState<string>("");
-  const [model, setModel] = useState<AllOptions>("gpt-3.5-turbo");
+  const [model, setModel] = useQueryParamsState();
   const tokenizer = useQuery({
     queryKey: [model],
     queryFn: ({ queryKey: [model] }) => createTokenizer(model!),
@@ -135,6 +161,10 @@ const Home: NextPage = () => {
       </main>
     </>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  return { props: { query: context.query } };
 };
 
 export default Home;
