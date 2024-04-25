@@ -33,6 +33,7 @@ const Home: NextPage = () => {
 
           <EncoderSelect
             value={model}
+            isLoading={tokenizer.isFetching}
             onChange={(update) => {
               setModel(update);
               if (isChatModel(update) !== isChatModel(model)) {

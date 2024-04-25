@@ -24,6 +24,7 @@ import {
 export function EncoderSelect(props: {
   value: AllOptions;
   onChange: (value: AllOptions) => void;
+  isLoading?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const { value } = props;
@@ -46,7 +47,12 @@ export function EncoderSelect(props: {
             role="combobox"
             className="w-[300px] justify-between"
           >
-            {value}
+            <span className="flex items-center gap-2">
+              <span>{value}</span>
+              {props.isLoading && (
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-gray-700 border-b-transparent" />
+              )}
+            </span>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
