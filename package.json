@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "dotenv tsx src/scripts/download.ts && next build",
-    "dev": "dotenv tsx src/scripts/download.ts && next dev",
+    "build": "yarn dotenv tsx src/scripts/download.ts && next build",
+    "dev": "yarn dotenv tsx src/scripts/download.ts && next dev",
     "lint": "next lint",
     "start": "next start"
   },
