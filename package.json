@@ -9,11 +9,16 @@
     "start": "next start"
   },
   "dependencies": {
-    "tiktoken": "^1.0.11",
     "@radix-ui/react-checkbox": "^1.0.3",
     "@radix-ui/react-popover": "^1.0.5",
     "@radix-ui/react-select": "^1.2.0",
     "@tanstack/react-query": "^4.20.2",
+    "@tiptap/core": "^2.3.0",
+    "@tiptap/extension-document": "^2.3.0",
+    "@tiptap/extension-paragraph": "^2.3.0",
+    "@tiptap/extension-text": "^2.3.0",
+    "@tiptap/pm": "^2.3.0",
+    "@tiptap/react": "^2.3.0",
     "@trpc/client": "^10.9.0",
     "@trpc/next": "^10.9.0",
     "@trpc/react-query": "^10.9.0",
@@ -31,6 +36,7 @@
     "superjson": "1.9.1",
     "tailwind-merge": "^1.10.0",
     "tailwindcss-animate": "^1.0.5",
+    "tiktoken": "^1.0.11",
     "zod": "^3.20.6"
   },
   "devDependencies": {

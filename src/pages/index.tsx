@@ -16,41 +16,11 @@ import {
 } from "~/sections/EncoderSelect";
 import { TokenViewer } from "~/sections/TokenViewer";
 import { TextArea } from "~/components/Input";
-import {
-  encoding_for_model,
-  get_encoding,
-  type TiktokenModel,
-  type TiktokenEncoding,
-} from "tiktoken";
+import { type TiktokenModel, type TiktokenEncoding } from "tiktoken";
 import { getSegments } from "~/utils/segments";
 import { useRouter } from "next/router";
-
-function getUserSelectedEncoder(
-  params: { model: TiktokenModel } | { encoder: TiktokenEncoding }
-) {
-  if ("model" in params) {
-    if (
-      params.model === "gpt-4" ||
-      params.model === "gpt-4-32k" ||
-      params.model === "gpt-3.5-turbo" ||
-      params.model === "gpt-4-1106-preview"
-    ) {
-      return encoding_for_model(params.model, {
-        "<|im_start|>": 100264,
-        "<|im_end|>": 100265,
-        "<|im_sep|>": 100266,
-      });
-    }
-
-    return encoding_for_model(params.model);
-  }
-
-  if ("encoder" in params) {
-    return get_encoding(params.encoder);
-  }
-
-  throw new Error("Invalid params");
-}
+import { RichEditor } from "~/components/RichEditor";
+import { getUserSelectedEncoder } from "../utils/model";
 
 function isChatModel(
   params: { model: TiktokenModel } | { encoder: TiktokenEncoding }
@@ -129,6 +99,8 @@ const Home: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = (
             }}
           />
         </div>
+
+        <RichEditor model={params} value={inputText} onChange={setInputText} />
 
         <div className="grid gap-4 md:grid-cols-2">
           <section className="flex flex-col gap-4">
