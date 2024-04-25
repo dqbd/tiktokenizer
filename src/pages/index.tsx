@@ -12,20 +12,8 @@ import { createTokenizer } from "~/models/tokenizer";
 import { useQuery } from "@tanstack/react-query";
 
 const Home: NextPage = () => {
-  const [inputText, setInputText] = useState<string>(`<!DOCTYPE html>
-  <html>
-    <head>
-      <title>Page Title</title>
-    </head>
-    <body>
-
-      <h1>This is a Heading</h1>
-      <p>This is a paragraph.</p>
-
-  </body>
-</html>`);
-
-  const [model, setModel] = useState<AllOptions>("codellama/CodeLlama-7b-hf");
+  const [inputText, setInputText] = useState<string>("");
+  const [model, setModel] = useState<AllOptions>("gpt-3.5-turbo");
   const tokenizer = useQuery({
     queryKey: [model],
     queryFn: ({ queryKey: [model] }) => createTokenizer(model!),
