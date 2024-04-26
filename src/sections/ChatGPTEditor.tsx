@@ -10,6 +10,42 @@ import {
 import { X as Close } from "lucide-react";
 import { Button } from "~/components/Button";
 import { Input, TextArea } from "~/components/Input";
+import { cn } from "~/utils/cn";
+
+const TEXT_COMMON_STYLE = cn(
+  "col-[1] row-[1]",
+  "flex h-full w-full rounded-md border border-slate-300 bg-transparent py-2 px-3 text-sm leading-[22px]"
+);
+
+function AutosizingTextArea(props: {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+}) {
+  return (
+    <div className="grid grid-cols-1">
+      <TextArea
+        rows={1}
+        placeholder="Content"
+        className={cn(
+          "resize-none",
+          "placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:text-slate-50 dark:focus:ring-slate-400 dark:focus:ring-offset-slate-900",
+          TEXT_COMMON_STYLE
+        )}
+        value={props.value}
+        onChange={(e) => {
+          props.onChange(e.target.value);
+        }}
+      />
+      <div
+        className={cn("whitespace-pre-wrap opacity-0", TEXT_COMMON_STYLE)}
+        style={{ visibility: "hidden" }}
+      >
+        {props.value || props.placeholder}{" "}
+      </div>
+    </div>
+  );
+}
 
 function getChatGPTEncoding(
   messages: { role: string; content: string; name: string }[],
@@ -93,15 +129,14 @@ export function ChatGPTEditor(props: {
                 />
               )}
 
-              <TextArea
-                rows={1}
+              <AutosizingTextArea
                 value={row.content}
                 placeholder="Content"
-                onChange={(e) =>
+                onChange={(value) =>
                   setRows((rows) => {
                     const newRows = [...rows];
                     // @ts-expect-error
-                    newRows[i].content = e.target.value;
+                    newRows[i].content = value;
                     return newRows;
                   })
                 }
