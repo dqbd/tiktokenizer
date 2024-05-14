@@ -29,7 +29,9 @@ export class TiktokenTokenizer implements Tokenizer {
   constructor(model: z.infer<typeof oaiModels> | z.infer<typeof oaiEncodings>) {
     const isModel = oaiModels.safeParse(model);
     const isEncoding = oaiEncodings.safeParse(model);
+    console.log(isModel.success, isEncoding.success, model)
     if (isModel.success) {
+
       if (
         model === "text-embedding-3-small" ||
         model === "text-embedding-3-large"
@@ -46,9 +48,9 @@ export class TiktokenTokenizer implements Tokenizer {
             })
           : model === "gpt-4o"
           ? get_encoding("o200k_base", {
-              "<|im_start|>": 100264,
-              "<|im_end|>": 100265,
-              "<|im_sep|>": 100266,
+              "<|im_start|>": 200264,
+              "<|im_end|>": 200265,
+              "<|im_sep|>": 200266,
             })
           : // @ts-expect-error r50k broken?
             encoding_for_model(model);
