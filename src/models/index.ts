@@ -67,14 +67,15 @@ export const oaiModels = z.enum([
 ]);
 
 export const openSourceModels = z.enum([
-  // "meta-llama/Llama-2-7b-hf",
+  "meta-llama/Llama-2-7b-hf",
   "codellama/CodeLlama-7b-hf",
   "codellama/CodeLlama-70b-hf",
   "meta-llama/Meta-Llama-3-8B",
   "meta-llama/Meta-Llama-3-70B",
   "microsoft/phi-2",
+  "microsoft/Phi-3-mini-128k-instruct",
   "google/gemma-7b",
-  // "mistralai/Mistral-7B-v0.1",
+  "mistralai/Mistral-7B-Instruct-v0.2",
   "tiiuae/falcon-7b",
   "01-ai/Yi-6B",
 ]);
@@ -93,6 +94,7 @@ export const hackModelsRemoveFirstToken = z.enum([
   "meta-llama/Llama-2-7b-hf",
   "codellama/CodeLlama-7b-hf",
   "codellama/CodeLlama-70b-hf",
+  "mistralai/Mistral-7B-Instruct-v0.2",
 ]);
 
 export const allModels = z.enum([
@@ -117,6 +119,8 @@ export const POPULAR: z.infer<typeof allOptions>[] = [
   "gpt-4-1106-preview",
   "gpt-3.5-turbo",
   "codellama/CodeLlama-7b-hf",
+  "meta-llama/Meta-Llama-3-8B",
+  "google/gemma-7b",
 ];
 
 export function isChatModel(
