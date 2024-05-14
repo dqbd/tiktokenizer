@@ -49,7 +49,12 @@ function AutosizingTextArea(props: {
 
 function getChatGPTEncoding(
   messages: { role: string; content: string; name: string }[],
-  model: "gpt-3.5-turbo" | "gpt-4-1106-preview" | "gpt-4" | "gpt-4-32k"
+  model:
+    | "gpt-3.5-turbo"
+    | "gpt-4-1106-preview"
+    | "gpt-4"
+    | "gpt-4o"
+    | "gpt-4-32k"
 ) {
   const isGpt3 = model === "gpt-3.5-turbo";
 
@@ -67,7 +72,12 @@ function getChatGPTEncoding(
 }
 
 export function ChatGPTEditor(props: {
-  model: "gpt-4" | "gpt-4-1106-preview" | "gpt-4-32k" | "gpt-3.5-turbo";
+  model:
+    | "gpt-4"
+    | "gpt-4-1106-preview"
+    | "gpt-4-32k"
+    | "gpt-4o"
+    | "gpt-3.5-turbo";
   onChange: (value: string) => void;
 }) {
   const [rows, setRows] = useState<
