@@ -8,9 +8,11 @@ export const oaiEncodings = z.enum([
   "p50k_base",
   "p50k_edit",
   "cl100k_base",
+  "o200k_base",
 ]);
 
 export const chatModels = z.enum([
+  "gpt-4o",
   "gpt-3.5-turbo",
   "gpt-4",
   "gpt-4-32k",
@@ -111,6 +113,7 @@ export const MODELS = allModels.options;
 
 export const POPULAR: z.infer<typeof allOptions>[] = [
   "cl100k_base",
+  "o200k_base",
   "gpt-4-1106-preview",
   "gpt-3.5-turbo",
   "codellama/CodeLlama-7b-hf",
@@ -121,6 +124,7 @@ export function isChatModel(
 ): model is z.infer<typeof chatModels> {
   return (
     model === "gpt-3.5-turbo" ||
+    model === "gpt-4o" ||
     model === "gpt-4" ||
     model === "gpt-4-1106-preview" ||
     model === "gpt-4-32k"

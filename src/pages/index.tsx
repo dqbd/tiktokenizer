@@ -22,7 +22,7 @@ function useQueryParamsState() {
   const params = useMemo((): AllOptions => {
     return isValidOption(router.query?.model)
       ? router.query.model
-      : "gpt-3.5-turbo";
+      : "gpt-4o";
   }, [router.query]);
 
   const setParams = (model: AllOptions) => {

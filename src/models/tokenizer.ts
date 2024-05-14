@@ -44,6 +44,12 @@ export class TiktokenTokenizer implements Tokenizer {
               "<|im_end|>": 100265,
               "<|im_sep|>": 100266,
             })
+          : model === "gpt-4o"
+          ? get_encoding("o200k_base", {
+              "<|im_start|>": 100264,
+              "<|im_end|>": 100265,
+              "<|im_sep|>": 100266,
+            })
           : // @ts-expect-error r50k broken?
             encoding_for_model(model);
       this.name = enc.name ?? model;

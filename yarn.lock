@@ -3935,10 +3935,10 @@ text-table@^0.2.0:
   resolved "https://registry.npmjs.org/text-table/-/text-table-0.2.0.tgz"
   integrity sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==
 
-tiktoken@^1.0.13:
-  version "1.0.13"
-  resolved "https://registry.npmjs.org/tiktoken/-/tiktoken-1.0.13.tgz"
-  integrity sha512-JaL9ZnvTbGFMDIBeGdVkLt4qWTeCPw+n7Ock+wceAGRenuHA6nOOvMJFliNDyXsjg2osGKJWsXtO2xc74VxyDw==
+tiktoken@^1.0.15:
+  version "1.0.15"
+  resolved "https://registry.yarnpkg.com/tiktoken/-/tiktoken-1.0.15.tgz#a1e11681fa51b50c81bb7eaaee53b7a66e844a23"
+  integrity sha512-sCsrq/vMWUSEW29CJLNmPvWxlVp7yh2tlkAjpJltIKqp5CKf98ZNpdeHRmAlPVFlGEbswDc6SmI8vz64W/qErw==
 
 time-zone@^1.0.0:
   version "1.0.0"
