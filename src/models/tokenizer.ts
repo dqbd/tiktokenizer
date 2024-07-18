@@ -46,7 +46,7 @@ export class TiktokenTokenizer implements Tokenizer {
               "<|im_end|>": 100265,
               "<|im_sep|>": 100266,
             })
-          : model === "gpt-4o"
+          : model === "gpt-4o" || model === "gpt-4o-mini"
           ? get_encoding("o200k_base", {
               "<|im_start|>": 200264,
               "<|im_end|>": 200265,
