@@ -17,21 +17,35 @@ export interface TokenizerResult {
   count: number;
 }
 
+export interface TokenInfo {
+  id: number;
+  text?: string;
+  bytes?: Uint8Array;
+  // If this is a merge, the original token ids that were merged to form this token
+  merge?: [number, number];
+  special?: boolean;
+}
+
 export interface Tokenizer {
   name: string;
+  type: string;
   tokenize(text: string): TokenizerResult;
+  getInfo(token: number): TokenInfo;
+  specialTokens: Record<string, number>;
+  tokenCount: number;
   free?(): void;
 }
 
 export class TiktokenTokenizer implements Tokenizer {
   private enc: Tiktoken;
+  readonly specialTokens: Record<string, number> = {};
   name: string;
+  type = "BPE";
   constructor(model: z.infer<typeof oaiModels> | z.infer<typeof oaiEncodings>) {
     const isModel = oaiModels.safeParse(model);
     const isEncoding = oaiEncodings.safeParse(model);
-    console.log(isModel.success, isEncoding.success, model)
+    console.log(isModel.success, isEncoding.success, model);
     if (isModel.success) {
-
       if (
         model === "text-embedding-3-small" ||
         model === "text-embedding-3-large"
@@ -39,21 +53,31 @@ export class TiktokenTokenizer implements Tokenizer {
         throw new Error("Model may be too new");
       }
 
-      const enc =
-        model === "gpt-3.5-turbo" || model === "gpt-4" || model === "gpt-4-32k"
-          ? get_encoding("cl100k_base", {
-              "<|im_start|>": 100264,
-              "<|im_end|>": 100265,
-              "<|im_sep|>": 100266,
-            })
-          : model === "gpt-4o"
-          ? get_encoding("o200k_base", {
-              "<|im_start|>": 200264,
-              "<|im_end|>": 200265,
-              "<|im_sep|>": 200266,
-            })
-          : // @ts-expect-error r50k broken?
-            encoding_for_model(model);
+      let specialTokens: Record<string, number> = {};
+      let enc;
+      if (
+        model === "gpt-3.5-turbo" ||
+        model === "gpt-4" ||
+        model === "gpt-4-32k"
+      ) {
+        specialTokens = {
+          "<|im_start|>": 100264,
+          "<|im_end|>": 100265,
+          "<|im_sep|>": 100266,
+        };
+        enc = get_encoding("cl100k_base", specialTokens);
+      } else if (model === "gpt-4o") {
+        specialTokens = {
+          "<|im_start|>": 200264,
+          "<|im_end|>": 200265,
+          "<|im_sep|>": 200266,
+        };
+        enc = get_encoding("o200k_base", specialTokens);
+      } else {
+        // @ts-expect-error r50k broken?
+        enc = encoding_for_model(model);
+      }
+      this.specialTokens = specialTokens;
       this.name = enc.name ?? model;
       this.enc = enc;
     } else if (isEncoding.success) {
@@ -62,6 +86,10 @@ export class TiktokenTokenizer implements Tokenizer {
     } else {
       throw new Error("Invalid model or encoding");
     }
+  }
+
+  get tokenCount(): number {
+    return this.enc.token_byte_values().length;
   }
 
   tokenize(text: string): TokenizerResult {
@@ -74,17 +102,37 @@ export class TiktokenTokenizer implements Tokenizer {
     };
   }
 
+  getInfo(token: number): TokenInfo {
+    const special = Object.entries(this.specialTokens).find(
+      ([_, value]) => value === token
+    );
+    // Search merges. TODO: how to do this?
+    return {
+      id: token,
+      bytes: this.enc.decode_single_token_bytes(token),
+      text: new TextDecoder("utf-8", { fatal: false }).decode(
+        this.enc.decode_single_token_bytes(token)
+      ),
+      special: special !== undefined,
+    };
+  }
+
   free(): void {
     this.enc.free();
   }
 }
 
 export class OpenSourceTokenizer implements Tokenizer {
+  readonly specialTokens: Record<string, number> = {};
+  name: string;
+  type = "SentencePieceBPE";
+
   constructor(private tokenizer: PreTrainedTokenizer, name?: string) {
     this.name = name ?? tokenizer.name;
+    this.specialTokens = Object.fromEntries(
+      tokenizer.added_tokens.map((t) => [t.content, t.id])
+    );
   }
-
-  name: string;
 
   static async load(
     model: z.infer<typeof openSourceModels>
@@ -115,6 +163,23 @@ export class OpenSourceTokenizer implements Tokenizer {
       tokens,
       segments: getHuggingfaceSegments(this.tokenizer, text, removeFirstToken),
       count: tokens.length,
+    };
+  }
+
+  get tokenCount(): number {
+    return this.tokenizer.model.tokens_to_ids.size;
+  }
+
+  getInfo(token: number): TokenInfo {
+    const t = this.tokenizer.decode([token]);
+    const special = Object.entries(this.specialTokens).find(
+      ([_, value]) => value === token
+    );
+    return {
+      id: token,
+      bytes: new TextEncoder().encode(t),
+      text: t,
+      special: special !== undefined,
     };
   }
 }

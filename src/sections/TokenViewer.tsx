@@ -4,6 +4,8 @@ import { cn } from "~/utils/cn";
 import BN from "bignumber.js";
 import { Checkbox } from "~/components/Checkbox";
 import { type TokenizerResult } from "~/models/tokenizer";
+import Link from "next/link";
+import { isOpenAIModel } from "~/models";
 
 const COLORS = [
   "bg-sky-200",
@@ -54,6 +56,7 @@ function encodeWhitespace(str: string) {
 export function TokenViewer(props: {
   isFetching: boolean;
   model: string | undefined;
+  isOpenAI: boolean;
   data: TokenizerResult | undefined;
 }) {
   const [indexHover, setIndexHover] = useState<null | number>(null);
@@ -61,7 +64,6 @@ export function TokenViewer(props: {
   const tokenCount =
     props.data?.segments?.reduce((memo, i) => memo + i.tokens.length, 0) ?? 0;
   const pricing = props.model != null ? PRICING[props.model] : undefined;
-
   const [showWhitespace, setShowWhitespace] = useState(false);
 
   return (
@@ -83,7 +85,7 @@ export function TokenViewer(props: {
       </div>
 
       <pre className="min-h-[256px] max-w-[100vw] overflow-auto whitespace-pre-wrap break-all rounded-md border bg-slate-50 p-4 shadow-sm">
-        {props.data?.segments?.map(({ text }, idx) => (
+        {props.data?.segments?.map(({ text, tokens }, idx) => (
           <span
             key={idx}
             onMouseEnter={() => setIndexHover(idx)}
@@ -95,9 +97,15 @@ export function TokenViewer(props: {
               props.isFetching && "opacity-50"
             )}
           >
-            {showWhitespace || indexHover === idx
-              ? encodeWhitespace(text)
-              : text}
+            <Link
+              href={`${props.isOpenAI ? "openai" : ""}/${props.model}/${
+                tokens[0]?.id
+              }`}
+            >
+              {showWhitespace || indexHover === idx
+                ? encodeWhitespace(text)
+                : text}
+            </Link>
           </span>
         ))}
       </pre>
@@ -118,17 +126,23 @@ export function TokenViewer(props: {
               <Fragment key={segmentIdx}>
                 {segment.tokens.map((token) => (
                   <Fragment key={token.idx}>
-                    <span
-                      onMouseEnter={() => setIndexHover(segmentIdx)}
-                      onMouseLeave={() => setIndexHover(null)}
-                      className={cn(
-                        "transition-colors",
-                        indexHover === segmentIdx &&
-                          COLORS[segmentIdx % COLORS.length]
-                      )}
+                    <Link
+                      href={`${props.isOpenAI ? "openai" : ""}/${props.model}/${
+                        token.id
+                      }`}
                     >
-                      {token.id}
-                    </span>
+                      <span
+                        onMouseEnter={() => setIndexHover(segmentIdx)}
+                        onMouseLeave={() => setIndexHover(null)}
+                        className={cn(
+                          "transition-colors",
+                          indexHover === segmentIdx &&
+                            COLORS[segmentIdx % COLORS.length]
+                        )}
+                      >
+                        {token.id}
+                      </span>
+                    </Link>
                     <span className="last-of-type:hidden">{", "}</span>
                   </Fragment>
                 ))}

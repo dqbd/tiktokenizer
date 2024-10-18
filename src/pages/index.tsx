@@ -11,7 +11,12 @@ import { ChatGPTEditor } from "../sections/ChatGPTEditor";
 import { EncoderSelect } from "~/sections/EncoderSelect";
 import { TokenViewer } from "~/sections/TokenViewer";
 import { TextArea } from "~/components/Input";
-import { type AllOptions, isChatModel, isValidOption } from "~/models";
+import {
+  type AllOptions,
+  isChatModel,
+  isOpenAIModel,
+  isValidOption,
+} from "~/models";
 import { createTokenizer } from "~/models/tokenizer";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
@@ -20,9 +25,7 @@ function useQueryParamsState() {
   const router = useRouter();
 
   const params = useMemo((): AllOptions => {
-    return isValidOption(router.query?.model)
-      ? router.query.model
-      : "gpt-4o";
+    return isValidOption(router.query?.model) ? router.query.model : "gpt-4o";
   }, [router.query]);
 
   const setParams = (model: AllOptions) => {
@@ -44,7 +47,6 @@ const Home: NextPage<
     queryKey: [model],
     queryFn: ({ queryKey: [model] }) => createTokenizer(model!),
   });
-
   const tokens = tokenizer.data?.tokenize(inputText);
 
   return (
@@ -83,7 +85,12 @@ const Home: NextPage<
           </section>
 
           <section className="flex flex-col gap-4">
-            <TokenViewer model={model} data={tokens} isFetching={false} />
+            <TokenViewer
+              model={model}
+              data={tokens}
+              isFetching={false}
+              isOpenAI={isOpenAIModel(model)}
+            />
           </section>
         </div>
         <style jsx>
