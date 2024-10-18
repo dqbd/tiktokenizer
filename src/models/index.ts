@@ -131,6 +131,10 @@ export function isChatModel(
   );
 }
 
+export function isOpenAIModel(model: AllOptions): boolean {
+  return model.indexOf("/") === -1;
+}
+
 export function isValidOption(model: unknown): model is AllOptions {
   return allOptions.safeParse(model).success;
 }
