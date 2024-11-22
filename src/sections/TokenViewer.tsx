@@ -27,14 +27,6 @@ const COLORS = [
   "bg-teal-200",
 ];
 
-const PRICING: Record<string, BN> = {
-  "gpt-4": BN("0.03").div(1000),
-  "gpt-4-1106-preview": BN("0.01").div(1000),
-  "gpt-4-32k": BN("0.03").div(1000),
-  "gpt-3.5-turbo": BN("0.0010").div(1000),
-  "gpt-3.5-instruct": BN("0.0015").div(1000),
-};
-
 function encodeWhitespace(str: string) {
   let result = str;
 
@@ -60,7 +52,6 @@ export function TokenViewer(props: {
 
   const tokenCount =
     props.data?.segments?.reduce((memo, i) => memo + i.tokens.length, 0) ?? 0;
-  const pricing = props.model != null ? PRICING[props.model] : undefined;
 
   const [showWhitespace, setShowWhitespace] = useState(false);
 
@@ -71,15 +62,6 @@ export function TokenViewer(props: {
           <p className="text-sm ">Token count</p>
           <p className="text-lg">{tokenCount}</p>
         </div>
-
-        {pricing != null && (
-          <div className="flex-grow rounded-md border bg-slate-50 p-4 shadow-sm">
-            <p className="text-sm ">Price per prompt</p>
-            <p className="text-lg">
-              ${pricing?.multipliedBy(tokenCount)?.toFixed()}
-            </p>
-          </div>
-        )}
       </div>
 
       <pre className="min-h-[256px] max-w-[100vw] overflow-auto whitespace-pre-wrap break-all rounded-md border bg-slate-50 p-4 shadow-sm">
