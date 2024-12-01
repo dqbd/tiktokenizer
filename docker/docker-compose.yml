@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  tiktokenizer:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+      args:
+        HF_API_KEY: ${HF_API_KEY}
+        NODE_ENV: "development"
+    ports:
+      - "3000:3000"
+    environment:
+      HF_API_KEY: ${HF_API_KEY}
+      NODE_ENV: "production"
