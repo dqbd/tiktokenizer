@@ -54,6 +54,7 @@ function getChatGPTEncoding(
     | "gpt-4-1106-preview"
     | "gpt-4"
     | "gpt-4o"
+    | "gpt-4o-mini"
     | "gpt-4-32k"
 ) {
   const isGpt3 = model === "gpt-3.5-turbo";
@@ -77,6 +78,7 @@ export function ChatGPTEditor(props: {
     | "gpt-4-1106-preview"
     | "gpt-4-32k"
     | "gpt-4o"
+    | "gpt-4o-mini"
     | "gpt-3.5-turbo";
   onChange: (value: string) => void;
 }) {
