@@ -49,7 +49,7 @@ export function EncoderSelect(props: {
             <span className="flex items-center gap-2">
               <span>{value}</span>
               {props.isLoading && (
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-gray-700 border-b-transparent" />
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-gray-700 border-b-transparent dark:border-gray-300 dark:border-b-transparent" />
               )}
             </span>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

@@ -7,6 +7,7 @@ import Head from "next/head";
 import { useMemo, useState } from "react";
 import { Github, Twitter } from "lucide-react";
 
+import { ThemeToggle } from "~/components/ThemeToggle";
 import { ChatGPTEditor } from "../sections/ChatGPTEditor";
 import { EncoderSelect } from "~/sections/EncoderSelect";
 import { TokenViewer } from "~/sections/TokenViewer";
@@ -78,7 +79,7 @@ const Home: NextPage<
             <TextArea
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              className="min-h-[256px] rounded-md border p-4 font-mono shadow-sm"
+              className="min-h-[256px] rounded-md border dark:border-gray-600 p-4 font-mono shadow-sm"
             />
           </section>
 
@@ -103,12 +104,12 @@ const Home: NextPage<
           `}
         </style>
         <div className="flex justify-between text-center md:mt-6">
-          <p className=" text-sm text-slate-400">
+          <p className=" text-sm text-slate-400 dark:text-slate-300">
             Built by{" "}
             <a
               target="_blank"
               rel="noreferrer"
-              className="text-slate-800"
+              className="text-slate-800 dark:text-slate-200"
               href="https://duong.dev"
             >
               dqbd
@@ -117,7 +118,7 @@ const Home: NextPage<
             <a
               target="_blank"
               rel="noreferrer"
-              className="diagram-link text-slate-800"
+              className="diagram-link text-slate-800 dark:text-slate-200"
               href="https://diagram.com"
             >
               <svg
@@ -140,10 +141,11 @@ const Home: NextPage<
           </p>
 
           <div className="flex items-center gap-4">
+            <ThemeToggle />
             <a
               target="_blank"
               rel="noreferrer"
-              className="text-slate-800"
+              className="text-slate-800 dark:text-slate-200"
               href="https://github.com/dqbd/tiktokenizer"
             >
               <Github />
@@ -151,7 +153,7 @@ const Home: NextPage<
             <a
               target="_blank"
               rel="noreferrer"
-              className="text-slate-800"
+              className="text-slate-800 dark:text-slate-200"
               href="https://twitter.com/__dqbd"
             >
               <Twitter />

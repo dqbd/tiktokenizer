@@ -27,6 +27,29 @@ const COLORS = [
   "bg-teal-200",
 ];
 
+// Map light colors to dark variants
+const DARK_COLORS = {
+  "bg-sky-200": "dark:bg-sky-900",
+  "bg-amber-200": "dark:bg-amber-900",
+  "bg-blue-200": "dark:bg-blue-900",
+  "bg-green-200": "dark:bg-green-900",
+  "bg-orange-200": "dark:bg-orange-900",
+  "bg-cyan-200": "dark:bg-cyan-900",
+  "bg-gray-200": "dark:bg-gray-700", // Adjusted gray for potentially better contrast
+  "bg-purple-200": "dark:bg-purple-900",
+  "bg-indigo-200": "dark:bg-indigo-900",
+  "bg-lime-200": "dark:bg-lime-900",
+  "bg-rose-200": "dark:bg-rose-900",
+  "bg-violet-200": "dark:bg-violet-900",
+  "bg-yellow-200": "dark:bg-yellow-900",
+  "bg-emerald-200": "dark:bg-emerald-900",
+  "bg-zinc-200": "dark:bg-zinc-700", // Adjusted zinc
+  "bg-red-200": "dark:bg-red-900",
+  "bg-fuchsia-200": "dark:bg-fuchsia-900",
+  "bg-pink-200": "dark:bg-pink-900",
+  "bg-teal-200": "dark:bg-teal-900",
+};
+
 function encodeWhitespace(str: string) {
   let result = str;
 
@@ -58,35 +81,39 @@ export function TokenViewer(props: {
   return (
     <>
       <div className="flex gap-4">
-        <div className="flex-grow rounded-md border bg-slate-50 p-4 shadow-sm">
+        <div className="flex-grow rounded-md border dark:border-gray-700 bg-slate-50 dark:bg-slate-800 p-4 shadow-sm">
           <p className="text-sm ">Token count</p>
           <p className="text-lg">{tokenCount}</p>
         </div>
       </div>
 
-      <pre className="min-h-[256px] max-w-[100vw] overflow-auto whitespace-pre-wrap break-all rounded-md border bg-slate-50 p-4 shadow-sm">
-        {props.data?.segments?.map(({ text }, idx) => (
-          <span
-            key={idx}
-            onMouseEnter={() => setIndexHover(idx)}
-            onMouseLeave={() => setIndexHover(null)}
-            className={cn(
-              "transition-all",
-              (indexHover == null || indexHover === idx) &&
-                COLORS[idx % COLORS.length],
-              props.isFetching && "opacity-50"
-            )}
-          >
-            {showWhitespace || indexHover === idx
-              ? encodeWhitespace(text)
-              : text}
-          </span>
-        ))}
+      <pre className="min-h-[256px] max-w-[100vw] overflow-auto whitespace-pre-wrap break-all rounded-md border dark:border-gray-700 bg-slate-50 dark:bg-slate-800 p-4 shadow-sm">
+        {props.data?.segments?.map(({ text }, idx) => {
+          const lightColor = COLORS[idx % COLORS.length]!;
+          const darkColor = DARK_COLORS[lightColor as keyof typeof DARK_COLORS];
+          return (
+            <span
+              key={idx}
+              onMouseEnter={() => setIndexHover(idx)}
+              onMouseLeave={() => setIndexHover(null)}
+              className={cn(
+                "transition-all",
+                (indexHover == null || indexHover === idx) && lightColor,
+                (indexHover == null || indexHover === idx) && darkColor,
+                props.isFetching && "opacity-50"
+              )}
+            >
+              {showWhitespace || indexHover === idx
+                ? encodeWhitespace(text)
+                : text}
+            </span>
+          );
+        })}
       </pre>
 
       <pre
         className={
-          "min-h-[256px] max-w-[100vw] overflow-auto whitespace-pre-wrap break-all rounded-md border bg-slate-50 p-4 shadow-sm"
+          "min-h-[256px] max-w-[100vw] overflow-auto whitespace-pre-wrap break-all rounded-md border dark:border-gray-700 bg-slate-50 dark:bg-slate-800 p-4 shadow-sm"
         }
       >
         {props.data && tokenCount > 0 && (
@@ -100,17 +127,23 @@ export function TokenViewer(props: {
               <Fragment key={segmentIdx}>
                 {segment.tokens.map((token) => (
                   <Fragment key={token.idx}>
-                    <span
-                      onMouseEnter={() => setIndexHover(segmentIdx)}
-                      onMouseLeave={() => setIndexHover(null)}
-                      className={cn(
-                        "transition-colors",
-                        indexHover === segmentIdx &&
-                          COLORS[segmentIdx % COLORS.length]
-                      )}
-                    >
-                      {token.id}
-                    </span>
+                    {(() => {
+                      const lightColor = COLORS[segmentIdx % COLORS.length]!;
+                      const darkColor = DARK_COLORS[lightColor as keyof typeof DARK_COLORS];
+                      return (
+                        <span
+                          onMouseEnter={() => setIndexHover(segmentIdx)}
+                          onMouseLeave={() => setIndexHover(null)}
+                          className={cn(
+                            "transition-colors",
+                            indexHover === segmentIdx && lightColor,
+                            indexHover === segmentIdx && darkColor
+                          )}
+                        >
+                          {token.id}
+                        </span>
+                      );
+                    })()}
                     <span className="last-of-type:hidden">{", "}</span>
                   </Fragment>
                 ))}
