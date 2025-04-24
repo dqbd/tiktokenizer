@@ -79,6 +79,7 @@ export const openSourceModels = z.enum([
   // "mistralai/Mistral-7B-v0.1",
   "tiiuae/falcon-7b",
   "01-ai/Yi-6B",
+  "openai/whisper-tiny",
 ]);
 
 export function tempLlama3HackGetRevision(model: AllModels): string {
