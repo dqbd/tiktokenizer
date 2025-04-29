@@ -13,6 +13,7 @@ export const oaiEncodings = z.enum([
 
 export const chatModels = z.enum([
   "gpt-4o",
+  "gpt-4o-mini",
   "gpt-3.5-turbo",
   "gpt-4",
   "gpt-4-32k",
@@ -128,6 +129,7 @@ export function isChatModel(
   return (
     model === "gpt-3.5-turbo" ||
     model === "gpt-4o" ||
+    model === "gpt-4o-mini" ||
     model === "gpt-4" ||
     model === "gpt-4-1106-preview" ||
     model === "gpt-4-32k"
